@@ -1,54 +1,49 @@
 # Cinematic scroll scene images
 
-The homepage scroll sequence (`src/components/CinematicScroll.tsx`) expects
-five 16:9 images in this folder:
+These five 16:9 images drive the homepage scroll sequence
+(`src/components/CinematicScroll.tsx`).
 
 | File | Scene |
 |---|---|
-| `pitch.png` | Soccer pitch, golden hour |
-| `park.png` | Calisthenics park |
-| `gym.png` | Industrial gym |
-| `hill.png` | Hill sprints at sunrise |
-| `miami.png` | Miami penthouse at dusk |
+| `pitch.webp` | Soccer pitch, golden hour |
+| `park.webp` | Calisthenics park |
+| `gym.webp` | Industrial gym |
+| `hill.webp` | Hill sprints at sunrise |
+| `miami.webp` | Miami penthouse at dusk |
 
-Until these files exist, each scene falls back to the `gradient` defined in
+If a file is missing, that scene falls back to the `gradient` defined in
 `src/lib/scenes.ts`, so the section still looks deliberate rather than broken.
 
-## Downloading the generated renders
+## How these were made
 
-These were generated with Higgsfield (`soul_2`, 2048×1152). Run from the
-repo root:
+Generated with [Higgsfield](https://higgsfield.ai) using `soul_2` at
+2048×1152, then converted to WebP at quality 82 (14.8 MB of PNG → 732 KB, a
+95% saving with no visible loss at full-screen size).
 
-```bash
-cd public/images/scenes
+Two prompt techniques hold the sequence together, both worth preserving if you
+regenerate:
 
-curl -L -o pitch.png "https://d8j0ntlcm91z4.cloudfront.net/user_3BrcNyRFGEGZEEKLE2IPkapGU9e/hf_20260825_230807_b2c70ac5-3fea-426b-8bee-25fdbcfdff4b.png"
-curl -L -o park.png  "https://d8j0ntlcm91z4.cloudfront.net/user_3BrcNyRFGEGZEEKLE2IPkapGU9e/hf_20260825_230807_b337ee05-fbf3-4a34-8c7b-5a8681004c7f.png"
-curl -L -o gym.png   "https://d8j0ntlcm91z4.cloudfront.net/user_3BrcNyRFGEGZEEKLE2IPkapGU9e/hf_20260825_230807_55f9be0f-850b-4faa-ae64-888a737a67e6.png"
-curl -L -o hill.png  "https://d8j0ntlcm91z4.cloudfront.net/user_3BrcNyRFGEGZEEKLE2IPkapGU9e/hf_20260825_230807_aaeec6bb-e1d8-4760-b55d-7084ac7794c5.png"
-curl -L -o miami.png "https://d8j0ntlcm91z4.cloudfront.net/user_3BrcNyRFGEGZEEKLE2IPkapGU9e/hf_20260825_230807_dc0d1251-243b-4c90-bafa-e63dbc3a776b.png"
-```
+1. **A character bible** — the same physical description of the athlete,
+   repeated verbatim in all five prompts.
+2. **A grade string** — the same lens/light/color-grade sentence
+   ("35mm anamorphic, warm golden hour backlight, teal and orange color grade,
+   deep crushed shadows, film grain…"), also repeated verbatim.
 
-These CloudFront links are tied to the Higgsfield account that generated them
-and may expire — download them sooner rather than later, or re-download from
-the Higgsfield dashboard.
-
-## Recommended: convert to WebP
-
-Five full-screen PNGs is a lot of bytes. Converting roughly halves the page
-weight with no visible quality loss:
-
-```bash
-# macOS/Linux with ImageMagick
-for f in *.png; do magick "$f" -quality 82 "${f%.png}.webp"; done
-```
-
-Then update the `image` paths in `src/lib/scenes.ts` to `.webp`.
+Framing is deliberately backlit, in profile, or from behind, so the face is
+never the hero. That is standard sports-photography language, it keeps a
+generated person consistent across scenes, and it means swapping in real
+photos later won't read as a different person appearing.
 
 ## Replacing with real photography
 
-When you have real photos of yourself, just drop them in with these
-filenames (or point `src/lib/scenes.ts` at new ones). Shoot or crop to 16:9,
-and favour backlit / profile / from-behind framing — that's what the current
-grade and text placement are composed around. Use the `focal` field per scene
-to control how each image crops on mobile.
+Drop replacements in with the same filenames, or point `src/lib/scenes.ts` at
+new ones. Shoot or crop to 16:9 and match the framing note above. Use each
+scene's `focal` field to control how the image crops on narrow mobile
+viewports.
+
+To re-convert new images to WebP:
+
+```bash
+# macOS/Linux with ImageMagick
+for f in *.png *.jpg; do magick "$f" -quality 82 "${f%.*}.webp"; done
+```

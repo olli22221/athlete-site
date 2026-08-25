@@ -56,34 +56,43 @@ export default function CinematicScroll() {
   );
 }
 
-function sceneRanges(index: number, total: number) {
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+/** Linear 0→1 ramp across [a, b], clamped at both ends. */
+const ramp = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
+
+function sceneWindow(index: number, total: number) {
   const step = 1 / total;
   const fade = step * 0.32;
-  const start = index * step;
-  const end = start + step;
-  const isFirst = index === 0;
-  const isLast = index === total - 1;
+  return {
+    step,
+    fade,
+    start: index * step,
+    end: index * step + step,
+    isFirst: index === 0,
+    isLast: index === total - 1,
+  };
+}
 
-  const input: number[] = [];
-  const output: number[] = [];
+/**
+ * Opacity of scene `index` at overall scroll progress `p`.
+ *
+ * Deliberately a plain scalar function rather than a keyframe array so the
+ * behaviour at the range edges is explicit: the first scene is already fully
+ * visible at p=0 and the last stays visible through p=1, and neither can
+ * reappear outside its own window.
+ */
+function sceneOpacity(p: number, index: number, total: number) {
+  const { start, end, fade, isFirst, isLast } = sceneWindow(index, total);
+  const fadeIn = isFirst ? 1 : ramp(p, start - fade, start + fade);
+  const fadeOut = isLast ? 1 : 1 - ramp(p, end - fade, end + fade);
+  return Math.min(fadeIn, fadeOut);
+}
 
-  if (isFirst) {
-    input.push(0);
-    output.push(1);
-  } else {
-    input.push(start - fade, start + fade);
-    output.push(0, 1);
-  }
-
-  if (isLast) {
-    input.push(1);
-    output.push(1);
-  } else {
-    input.push(end - fade, end + fade);
-    output.push(1, 0);
-  }
-
-  return { step, fade, start, end, input, output };
+/** 0→1 position of `p` across the scene's full window, including its fades. */
+function sceneTravel(p: number, index: number, total: number) {
+  const { start, end, fade } = sceneWindow(index, total);
+  return ramp(p, start - fade, end + fade);
 }
 
 function SceneLayer({
@@ -98,20 +107,15 @@ function SceneLayer({
   progress: MotionValue<number>;
 }) {
   const reduce = useReducedMotion();
-  const { fade, start, end, input, output } = sceneRanges(index, total);
 
-  const opacity = useTransform(progress, input, output);
+  const opacity = useTransform(progress, (p) => sceneOpacity(p, index, total));
   // slow continuous push-in across the scene's whole window
-  const scale = useTransform(
-    progress,
-    [start - fade, end + fade],
-    reduce ? [1, 1] : [1.14, 1.0]
+  const scale = useTransform(progress, (p) =>
+    reduce ? 1 : 1.14 - sceneTravel(p, index, total) * 0.14
   );
   // text drifts slightly against the image for depth
-  const textY = useTransform(
-    progress,
-    [start - fade, end + fade],
-    reduce ? [0, 0] : [48, -48]
+  const textY = useTransform(progress, (p) =>
+    reduce ? 0 : 48 - sceneTravel(p, index, total) * 96
   );
 
   return (
@@ -136,13 +140,14 @@ function SceneLayer({
         />
       </motion.div>
 
-      {/* grade + legibility scrim */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50" />
+      {/* grade + legibility scrim — weighted to the bottom-left, where the
+          caption sits, so the rest of the frame keeps its contrast */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/35" />
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 30% 60%, transparent 30%, rgba(0,0,0,0.75) 100%)",
+            "radial-gradient(ellipse at 35% 65%, transparent 40%, rgba(0,0,0,0.55) 100%)",
         }}
       />
       <div className="grain absolute inset-0" />
@@ -157,10 +162,10 @@ function SceneLayer({
             <span className="h-px w-10 bg-accent" />
             {scene.kicker}
           </div>
-          <h2 className="font-display mt-4 max-w-3xl text-balance text-5xl leading-[0.95] tracking-wide text-foreground sm:text-7xl lg:text-8xl">
+          <h2 className="font-display mt-4 max-w-3xl text-balance text-5xl leading-[0.95] tracking-wide text-foreground drop-shadow-[0_2px_24px_rgba(0,0,0,0.9)] sm:text-7xl lg:text-8xl">
             {scene.headline}
           </h2>
-          <p className="mt-5 max-w-md text-sm leading-relaxed text-foreground/70 sm:text-base">
+          <p className="mt-5 max-w-md text-sm leading-relaxed text-foreground/80 drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] sm:text-base">
             {scene.caption}
           </p>
         </div>
@@ -173,7 +178,12 @@ function ProgressRail({ progress }: { progress: MotionValue<number> }) {
   return (
     <div className="pointer-events-none absolute right-6 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
       {scenes.map((scene, i) => (
-        <RailTick key={scene.id} index={i} total={scenes.length} progress={progress} />
+        <RailTick
+          key={scene.id}
+          index={i}
+          total={scenes.length}
+          progress={progress}
+        />
       ))}
     </div>
   );
@@ -188,14 +198,13 @@ function RailTick({
   total: number;
   progress: MotionValue<number>;
 }) {
-  const { input, output } = sceneRanges(index, total);
-  const opacity = useTransform(progress, input, output);
-  const dim = useTransform(opacity, (v) => 0.25 + v * 0.75);
-  const scaleY = useTransform(opacity, (v) => 0.4 + v * 0.6);
+  const active = useTransform(progress, (p) => sceneOpacity(p, index, total));
+  const opacity = useTransform(active, (v) => 0.25 + v * 0.75);
+  const scaleY = useTransform(active, (v) => 0.4 + v * 0.6);
 
   return (
     <motion.span
-      style={{ opacity: dim, scaleY }}
+      style={{ opacity, scaleY }}
       className="block h-8 w-[3px] origin-center rounded-full bg-accent"
     />
   );

@@ -32,7 +32,7 @@ export const scenes: Scene[] = [
     headline: "IT STARTED HERE",
     caption:
       "Before the programming and the podiums, there was just a field and a reason to keep showing up.",
-    image: "/images/scenes/pitch.png",
+    image: "/images/scenes/pitch.webp",
     gradient: ["#2b1a0d", "#0a0a08"],
     focal: "50% 55%",
   },
@@ -42,7 +42,7 @@ export const scenes: Scene[] = [
     headline: "OWN YOUR BODYWEIGHT",
     caption:
       "No machines, no excuses. Control what you can move before you add load to it.",
-    image: "/images/scenes/park.png",
+    image: "/images/scenes/park.webp",
     gradient: ["#2e1f10", "#090b09"],
     focal: "50% 45%",
   },
@@ -52,7 +52,7 @@ export const scenes: Scene[] = [
     headline: "EARNED IN THE DARK",
     caption:
       "The unglamorous middle. Same lifts, same hours, weeks on end — this is where it's actually built.",
-    image: "/images/scenes/gym.png",
+    image: "/images/scenes/gym.webp",
     gradient: ["#241a12", "#08090a"],
     focal: "50% 50%",
   },
@@ -62,7 +62,7 @@ export const scenes: Scene[] = [
     headline: "NO SHORTCUTS UP",
     caption:
       "Conditioning doesn't negotiate. The hill gives you exactly what you put into it.",
-    image: "/images/scenes/hill.png",
+    image: "/images/scenes/hill.webp",
     gradient: ["#33230f", "#0a0a0a"],
     focal: "50% 50%",
   },
@@ -72,7 +72,7 @@ export const scenes: Scene[] = [
     headline: "THEN THE PAYOFF",
     caption:
       "Discipline compounds. Everything on the other side of it is just interest earned.",
-    image: "/images/scenes/miami.png",
+    image: "/images/scenes/miami.webp",
     gradient: ["#12212b", "#08090a"],
     focal: "50% 50%",
   },
