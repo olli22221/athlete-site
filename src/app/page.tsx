@@ -12,6 +12,7 @@ import Counter from "@/components/Counter";
 import Marquee from "@/components/Marquee";
 import Kicker from "@/components/Kicker";
 import CinematicBackdrop from "@/components/CinematicBackdrop";
+import CinematicScroll from "@/components/CinematicScroll";
 import ProductCard from "@/components/ProductCard";
 import { siteConfig } from "@/lib/site-config";
 import { getFeaturedProducts } from "@/lib/products";
@@ -82,6 +83,11 @@ export default function Home() {
       </section>
 
       <Marquee text="STRENGTH · DISCIPLINE · PERFORMANCE · RECOVERY · CONSISTENCY · " />
+
+      {/* ---------------------------------------------------------------- */}
+      {/* CINEMATIC SCROLL SEQUENCE                                         */}
+      {/* ---------------------------------------------------------------- */}
+      <CinematicScroll />
 
       {/* ---------------------------------------------------------------- */}
       {/* ABOUT                                                             */}

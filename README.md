@@ -30,10 +30,31 @@ stylized gradient tiles instead of photos — swap in real product photography
 by adding an `image` field/`<Image>` usage once you have shots, or drop
 files into `public/images/` and reference them.
 
+## The cinematic scroll sequence
+
+The homepage centrepiece is a scroll-pinned title sequence: five full-viewport
+scenes (soccer pitch → calisthenics park → gym → hill sprints → Miami
+penthouse) that cross-fade into one another with a slow Ken Burns push,
+letterbox bars, and a progress rail.
+
+- Scene copy, image paths, and per-scene crop focal points:
+  `src/lib/scenes.ts` — add or remove entries and the section resizes itself
+- The scroll rig: `src/components/CinematicScroll.tsx`
+- The images themselves: `public/images/scenes/` (see the README in that
+  folder for download + WebP conversion instructions)
+
+It respects `prefers-reduced-motion` — the push-in and parallax are disabled
+for visitors who've asked for reduced motion, while the cross-fade remains.
+
+Images were generated with [Higgsfield](https://higgsfield.ai) using the
+`soul_2` model at 2048×1152. A fixed "character bible" and grade string are
+repeated verbatim in every prompt, which is what keeps the same person and the
+same film look across all five scenes — worth preserving if you regenerate.
+
 ## Pages
 
-- `/` — cinematic landing page: hero, about, stats, coaching/services,
-  featured gear, AI clone teaser, testimonials, final CTA
+- `/` — cinematic landing page: hero, scroll sequence, about, stats,
+  coaching/services, featured gear, AI clone teaser, testimonials, final CTA
 - `/products` — full catalog with category filtering
 - `/products/[slug]` — product detail page
 - `/clone` — the Tavus-powered "Talk to my AI Clone" experience
