@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------
-// Product catalog — showcase-only for now (no checkout wired up yet).
-// Add/edit products here; every field flows through to the /products pages.
-// Swap `image` for a real photo path (e.g. "/images/products/vest.jpg") once
-// you have product photography — until then a styled gradient tile is shown.
+// Gym shop — merch and Hyrox competition gear. Showcase-only for now
+// (no checkout wired up), so each product links to an enquiry flow.
+//
+// Swap `image` for a real photo path once you have product photography —
+// until then a styled gradient tile is shown.
 // ---------------------------------------------------------------------------
 
-export type ProductCategory = "apparel" | "equipment" | "accessories";
+export type ProductCategory = "apparel" | "competition" | "accessories";
 
 export type Product = {
   slug: string;
@@ -23,25 +24,25 @@ export type Product = {
 };
 
 export const categoryLabels: Record<ProductCategory, string> = {
-  apparel: "Apparel",
-  equipment: "Equipment",
+  apparel: "Gym Apparel",
+  competition: "Hyrox Gear",
   accessories: "Accessories",
 };
 
 export const products: Product[] = [
   {
     slug: "forge-weight-vest",
-    name: "Forge Weighted Vest",
-    category: "equipment",
+    name: "FORGE Weighted Vest",
+    category: "competition",
     price: 189,
-    tagline: "Adjustable resistance, zero bounce.",
+    tagline: "Hyrox-legal, zero bounce.",
     description:
-      "The vest I train in every day. Adjustable from 10–60lbs with steel shot packs, a compression fit that stays locked through sprints, and reinforced stitching built for years of abuse.",
+      "The vest we use for Hyrox prep. Meets competition weight requirements (10kg men / 5kg women), with a compression fit that stays locked through wall balls, burpees and running.",
     details: [
-      "Adjustable 10–60 lbs in 5 lb increments",
-      "Compression fit — no bounce, no chafing",
+      "Hyrox competition weights: 10kg / 5kg",
+      "Compression fit — no bounce over running legs",
+      "Low profile so it clears the wall ball catch",
       "Reinforced double-stitched seams",
-      "Moisture-wicking inner lining",
     ],
     sizes: ["S/M", "L/XL"],
     colors: ["Black", "Graphite"],
@@ -49,89 +50,90 @@ export const products: Product[] = [
     featured: true,
   },
   {
-    slug: "relentless-training-tee",
-    name: "Relentless Training Tee",
+    slug: "forge-training-tee",
+    name: "FORGE Training Tee",
     category: "apparel",
-    price: 42,
-    tagline: "The shirt I wear on the hardest sessions.",
+    price: 32,
+    tagline: "The gym shirt, done properly.",
     description:
-      "Lightweight, four-way stretch performance fabric that keeps up when the session gets ugly. Minimal branding, maximum durability.",
+      "Lightweight four-way stretch with a small chest mark. Survives rope climbs, bar work and the wash cycle after.",
     details: [
       "4-way stretch performance fabric",
-      "Sweat-wicking + odor resistant",
+      "Sweat-wicking and odour resistant",
       "Flatlock seams to prevent chafing",
       "Pre-shrunk, true to size",
     ],
-    sizes: ["S", "M", "L", "XL", "XXL"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
     colors: ["Black", "Volt", "Ash"],
     gradient: ["#161616", "#2a2f1e"],
     featured: true,
   },
   {
-    slug: "competitor-joggers",
-    name: "Competitor Joggers",
+    slug: "grip-shorts",
+    name: "Competition Shorts",
     category: "apparel",
-    price: 68,
-    tagline: "Warm up, cool down, walk out.",
+    price: 48,
+    tagline: "Run, lunge, jump, repeat.",
     description:
-      "Tapered fit joggers built for the walk from the car to the platform and everything after. Zippered pockets, articulated knees, no-ride waistband.",
+      "Built for the eight-kilometre half of a Hyrox. Zero-chafe liner, secure zip pocket, and a hem that doesn't ride during burpee broad jumps.",
     details: [
-      "Tapered athletic fit",
-      "Zippered side + back pockets",
-      "Articulated knee construction",
-      "Wide, no-ride waistband",
+      "Anti-chafe bonded liner",
+      "Secure zip pocket for a key or gel",
+      "Four-way stretch, quick drying",
+      "Reflective detail for night running",
     ],
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["XS", "S", "M", "L", "XL"],
     colors: ["Black", "Charcoal"],
     gradient: ["#141414", "#26262c"],
   },
   {
-    slug: "iron-grip-lifting-straps",
-    name: "Iron Grip Lifting Straps",
+    slug: "hand-grips",
+    name: "No-Tear Hand Grips",
     category: "accessories",
-    price: 24,
-    tagline: "Stop losing the pull to grip.",
+    price: 29,
+    tagline: "Keep your hands on the bar.",
     description:
-      "Heavy-duty cotton lifting straps with neoprene padding. Built to handle max-effort pulls without slipping.",
+      "Three-finger carbon grips for toes-to-bar, pull-ups and muscle-ups. Break in fast and hold chalk well.",
     details: [
-      "Heavy-duty cotton weave",
-      "Neoprene wrist padding",
-      "Reinforced stitch loop",
-      "One size, fully adjustable",
+      "Carbon composite, no break-in tearing",
+      "Three-finger design",
+      "Adjustable wrist strap",
+      "Sold as a pair with a carry pouch",
     ],
+    sizes: ["S", "M", "L"],
     gradient: ["#1c1c1c", "#2e2620"],
   },
   {
-    slug: "endure-resistance-bands",
-    name: "Endure Resistance Band Set",
-    category: "equipment",
-    price: 39,
-    tagline: "Warm-up to max-effort, five bands deep.",
+    slug: "skipping-rope",
+    name: "Speed Rope",
+    category: "accessories",
+    price: 34,
+    tagline: "Double-unders, finally.",
     description:
-      "A five-band resistance set covering activation warm-ups through banded max-effort work. Includes a carry bag and anchor strap.",
+      "Adjustable steel cable rope with precision bearings. The rope we hand people when they're learning double-unders.",
     details: [
-      "5 resistance levels (10–150 lbs)",
-      "Natural latex, snap-resistant",
-      "Door anchor + carry bag included",
-      "Ideal for warm-ups & accessory work",
+      "Ball-bearing swivel for a true spin",
+      "Adjustable cable, cut to your height",
+      "Knurled aluminium handles",
+      "Spare cable included",
     ],
     gradient: ["#171717", "#202b24"],
   },
   {
-    slug: "shadow-performance-hoodie",
-    name: "Shadow Performance Hoodie",
+    slug: "forge-hoodie",
+    name: "FORGE Hoodie",
     category: "apparel",
-    price: 74,
-    tagline: "Pre-session armor.",
+    price: 68,
+    tagline: "For the walk in at 5:50am.",
     description:
-      "A heavyweight training hoodie for cold warm-ups and colder mornings. Thumbholes, a kangaroo pocket built for a phone and keys, and a hood that stays put mid-run.",
+      "Heavyweight brushed fleece with an embroidered chest mark. Warm enough for a winter car park, relaxed enough to live in.",
     details: [
       "Heavyweight brushed fleece",
-      "Thumbhole cuffs",
-      "Secure-fit hood",
+      "Embroidered chest mark",
       "Kangaroo pocket",
+      "Unisex relaxed fit",
     ],
-    sizes: ["S", "M", "L", "XL", "XXL"],
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
     colors: ["Black", "Volt Trim"],
     gradient: ["#151515", "#242424"],
     featured: true,

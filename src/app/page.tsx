@@ -1,11 +1,11 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Flame,
-  LineChart,
-  Salad,
+  CalendarDays,
+  Dumbbell,
   Sparkles,
-  Target,
+  Timer,
+  Trophy,
 } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Counter from "@/components/Counter";
@@ -14,10 +14,14 @@ import Kicker from "@/components/Kicker";
 import CinematicBackdrop from "@/components/CinematicBackdrop";
 import CinematicScroll from "@/components/CinematicScroll";
 import ProductCard from "@/components/ProductCard";
+import CoachGrid from "@/components/CoachGrid";
+import MembershipCards from "@/components/MembershipCards";
+import TrialCTA from "@/components/TrialCTA";
 import { siteConfig } from "@/lib/site-config";
 import { getFeaturedProducts } from "@/lib/products";
+import { totalWeeklyClasses } from "@/lib/schedule";
 
-const icons = { Target, LineChart, Flame, Salad };
+const icons = { Dumbbell, Timer, Trophy, Sparkles };
 
 export default function Home() {
   const featured = getFeaturedProducts();
@@ -36,12 +40,9 @@ export default function Home() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <h1 className="font-display mt-6 text-balance text-[15vw] leading-[0.9] tracking-wide text-foreground sm:text-[10vw] lg:text-[7.5rem]">
-              {siteConfig.name.split(" ")[0]}
-              <br />
-              <span className="text-accent">
-                {siteConfig.name.split(" ").slice(1).join(" ")}
-              </span>
+            <h1 className="font-display mt-6 text-balance text-[17vw] leading-[0.85] tracking-[0.02em] text-foreground sm:text-[12vw] lg:text-[9rem]">
+              {siteConfig.name}
+              <span className="text-accent">.</span>
             </h1>
           </Reveal>
 
@@ -54,35 +55,33 @@ export default function Home() {
           <Reveal delay={0.3}>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
-                href="/#training"
+                href="/contact"
                 className="group inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-medium uppercase tracking-[0.15em] text-black transition-transform hover:-translate-y-0.5"
               >
-                Explore Training
+                Claim Your Free Class
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-1"
                 />
               </Link>
               <Link
-                href="/clone"
+                href="/schedule"
                 className="inline-flex items-center gap-2 rounded-full border border-foreground/25 px-7 py-3.5 text-sm font-medium uppercase tracking-[0.15em] text-foreground transition-colors hover:border-accent hover:text-accent"
               >
-                <Sparkles size={16} />
-                Meet My AI Clone
+                <CalendarDays size={16} />
+                See the Timetable
               </Link>
             </div>
           </Reveal>
         </div>
 
         <div className="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-muted sm:flex">
-          <span className="text-[10px] uppercase tracking-[0.3em]">
-            Scroll
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
           <span className="h-10 w-px animate-pulse bg-gradient-to-b from-accent to-transparent" />
         </div>
       </section>
 
-      <Marquee text="STRENGTH · DISCIPLINE · PERFORMANCE · RECOVERY · CONSISTENCY · " />
+      <Marquee text="CROSSFIT · HYROX · STRENGTH · CONDITIONING · COMMUNITY · " />
 
       {/* ---------------------------------------------------------------- */}
       {/* CINEMATIC SCROLL SEQUENCE                                         */}
@@ -90,7 +89,7 @@ export default function Home() {
       <CinematicScroll />
 
       {/* ---------------------------------------------------------------- */}
-      {/* ABOUT                                                             */}
+      {/* ABOUT + STATS                                                     */}
       {/* ---------------------------------------------------------------- */}
       <section id="about" className="relative bg-background py-28">
         <div className="mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-[1fr_1fr] lg:px-10">
@@ -107,14 +106,14 @@ export default function Home() {
                 {siteConfig.shortName}
               </span>
               <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.25em] text-muted">
-                Photo placeholder — drop /public/images/about.jpg
+                Photo placeholder — drop /public/images/gym.jpg
               </span>
             </div>
           </Reveal>
 
           <div>
             <Reveal>
-              <Kicker>About</Kicker>
+              <Kicker>The Gym</Kicker>
             </Reveal>
             <Reveal delay={0.1}>
               <h2 className="font-display mt-5 text-balance text-4xl leading-tight sm:text-5xl">
@@ -131,7 +130,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* stats */}
         <div className="mx-auto mt-24 max-w-7xl px-6 lg:px-10">
           <div className="grid grid-cols-2 gap-8 border-t border-line pt-14 sm:grid-cols-4">
             {siteConfig.stats.map((stat, i) => (
@@ -149,36 +147,32 @@ export default function Home() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      {/* TRAINING / SERVICES                                               */}
+      {/* PROGRAMS                                                          */}
       {/* ---------------------------------------------------------------- */}
-      <section id="training" className="relative overflow-hidden bg-surface py-28">
+      <section id="programs" className="relative overflow-hidden bg-surface py-28">
         <CinematicBackdrop variant="section" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <Reveal>
-            <Kicker>Coaching</Kicker>
+            <Kicker>What we run</Kicker>
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
-              Programs built the way I train myself.
+              {totalWeeklyClasses()} coached classes a week.
             </h2>
           </Reveal>
 
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {siteConfig.services.map((service, i) => {
-              const Icon = icons[service.icon as keyof typeof icons];
+            {siteConfig.programs.map((program, i) => {
+              const Icon = icons[program.icon as keyof typeof icons];
               return (
-                <Reveal key={service.title} delay={i * 0.08}>
-                  <div className="group h-full rounded-2xl border border-line bg-background p-7 transition-colors hover:border-accent/50">
-                    <Icon
-                      size={28}
-                      strokeWidth={1.5}
-                      className="text-accent"
-                    />
+                <Reveal key={program.title} delay={i * 0.08}>
+                  <div className="h-full rounded-2xl border border-line bg-background p-7 transition-colors hover:border-accent/50">
+                    <Icon size={28} strokeWidth={1.5} className="text-accent" />
                     <h3 className="font-display mt-6 text-xl tracking-wide">
-                      {service.title}
+                      {program.title}
                     </h3>
                     <p className="mt-3 text-sm leading-relaxed text-muted">
-                      {service.description}
+                      {program.description}
                     </p>
                   </div>
                 </Reveal>
@@ -189,10 +183,10 @@ export default function Home() {
           <Reveal delay={0.3}>
             <div className="mt-14">
               <Link
-                href="/contact"
+                href="/schedule"
                 className="group inline-flex items-center gap-2 rounded-full border border-foreground/25 px-7 py-3.5 text-sm font-medium uppercase tracking-[0.15em] text-foreground transition-colors hover:border-accent hover:text-accent"
               >
-                Start Coaching Inquiry
+                View the full timetable
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-1"
@@ -204,27 +198,79 @@ export default function Home() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      {/* FEATURED GEAR                                                     */}
+      {/* FREE TRIAL                                                        */}
+      {/* ---------------------------------------------------------------- */}
+      <TrialCTA />
+
+      {/* ---------------------------------------------------------------- */}
+      {/* MEMBERSHIP                                                        */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="bg-background py-28">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <Reveal>
+            <Kicker>Membership</Kicker>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
+              Rolling monthly. No lock-in.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <p className="mt-5 max-w-lg text-muted">
+              Every plan includes full coaching on every session. Cancel or
+              switch tiers any time with a month&apos;s notice.
+            </p>
+          </Reveal>
+
+          <div className="mt-14">
+            <MembershipCards />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* COACHES                                                           */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="relative overflow-hidden bg-surface py-28">
+        <CinematicBackdrop variant="section" />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+          <Reveal>
+            <Kicker>The Coaches</Kicker>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
+              You&apos;ll know all of them by name.
+            </h2>
+          </Reveal>
+
+          <div className="mt-14">
+            <CoachGrid />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* SHOP                                                              */}
       {/* ---------------------------------------------------------------- */}
       <section className="bg-background py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <Reveal>
-                <Kicker>The Gear</Kicker>
+                <Kicker>The Shop</Kicker>
               </Reveal>
               <Reveal delay={0.1}>
                 <h2 className="font-display mt-5 text-balance text-4xl leading-tight sm:text-5xl">
-                  Train in what I train in.
+                  Kit that survives the session.
                 </h2>
               </Reveal>
             </div>
             <Reveal delay={0.15}>
               <Link
-                href="/products"
+                href="/shop"
                 className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.15em] text-accent"
               >
-                Shop the collection
+                Shop everything
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-1"
@@ -244,7 +290,7 @@ export default function Home() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      {/* AI CLONE TEASER                                                   */}
+      {/* AI COACH                                                          */}
       {/* ---------------------------------------------------------------- */}
       <section className="grain relative overflow-hidden bg-surface py-28">
         <CinematicBackdrop variant="section" />
@@ -258,22 +304,22 @@ export default function Home() {
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="font-display mx-auto mt-6 max-w-3xl text-balance text-4xl leading-tight sm:text-6xl">
-              Can&apos;t book a session? Talk to my AI clone instead.
+              Not sure if you&apos;re fit enough to start?
             </h2>
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mx-auto mt-6 max-w-xl leading-relaxed text-muted">
-              A real-time video conversation with an AI-powered version of
-              me — trained on my coaching philosophy, available 24/7 to
-              answer training questions on the spot.
+              Ask our AI coach. It&apos;ll walk you through what a class
+              actually looks like, what Hyrox involves, and how we scale things
+              for complete beginners — in a real face-to-face video chat.
             </p>
           </Reveal>
           <Reveal delay={0.3}>
             <Link
-              href="/clone"
+              href="/coach-ai"
               className="mt-10 inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-medium uppercase tracking-[0.15em] text-black transition-transform hover:-translate-y-0.5"
             >
-              Start a Conversation
+              Talk to the AI Coach
               <ArrowRight size={16} />
             </Link>
           </Reveal>
@@ -286,11 +332,11 @@ export default function Home() {
       <section className="bg-background py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <Reveal>
-            <Kicker>Results</Kicker>
+            <Kicker>Members</Kicker>
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
-              What it&apos;s like training with me.
+              Why they keep turning up.
             </h2>
           </Reveal>
 
@@ -302,9 +348,7 @@ export default function Home() {
                     &ldquo;{t.quote}&rdquo;
                   </blockquote>
                   <figcaption className="mt-6 border-t border-line pt-4 text-sm">
-                    <span className="font-medium text-foreground">
-                      {t.name}
-                    </span>
+                    <span className="font-medium text-foreground">{t.name}</span>
                     <span className="block text-xs uppercase tracking-[0.15em] text-muted">
                       {t.role}
                     </span>
@@ -313,35 +357,6 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* FINAL CTA                                                         */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-surface py-28">
-        <CinematicBackdrop variant="section" />
-        <div className="relative mx-auto max-w-4xl px-6 text-center lg:px-10">
-          <Reveal>
-            <h2 className="font-display text-balance text-4xl leading-tight sm:text-6xl">
-              Ready to train like you compete?
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p className="mx-auto mt-6 max-w-lg text-muted">
-              Spots are limited each cycle. Tell me about your goals and
-              I&apos;ll get back to you within 48 hours.
-            </p>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <Link
-              href="/contact"
-              className="mt-10 inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-medium uppercase tracking-[0.15em] text-black transition-transform hover:-translate-y-0.5"
-            >
-              Get Started
-              <ArrowRight size={16} />
-            </Link>
-          </Reveal>
         </div>
       </section>
     </>

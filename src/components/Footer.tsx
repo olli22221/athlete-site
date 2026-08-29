@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import BrandIcon from "@/components/BrandIcon";
 import { siteConfig } from "@/lib/site-config";
 
@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
-            <p className="font-display text-3xl tracking-widest">
+            <p className="font-display text-3xl tracking-[0.2em]">
               {siteConfig.name}
               <span className="text-accent">.</span>
             </p>
@@ -56,27 +56,32 @@ export default function Footer() {
 
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-muted">
-              Explore
+              The Gym
             </p>
             <ul className="mt-4 space-y-3 text-sm">
               <li>
-                <Link href="/#about" className="hover:text-accent">
-                  About
+                <Link href="/schedule" className="hover:text-accent">
+                  Timetable
                 </Link>
               </li>
               <li>
-                <Link href="/#training" className="hover:text-accent">
-                  Training
+                <Link href="/membership" className="hover:text-accent">
+                  Membership
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="hover:text-accent">
+                <Link href="/coaches" className="hover:text-accent">
+                  Coaches
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-accent">
                   Shop
                 </Link>
               </li>
               <li>
-                <Link href="/clone" className="hover:text-accent">
-                  AI Clone
+                <Link href="/coach-ai" className="hover:text-accent">
+                  AI Coach
                 </Link>
               </li>
             </ul>
@@ -84,11 +89,28 @@ export default function Footer() {
 
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-muted">
-              Get in touch
+              Find us
             </p>
             <ul className="mt-4 space-y-3 text-sm">
-              <li className="text-muted">{siteConfig.location}</li>
-              <li>
+              <li className="flex gap-2.5 text-muted">
+                <MapPin size={15} className="mt-0.5 shrink-0 text-accent" />
+                <span>
+                  {siteConfig.address.line1}
+                  <br />
+                  {siteConfig.address.line2}
+                </span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Phone size={15} className="shrink-0 text-accent" />
+                <a
+                  href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
+                  className="hover:text-accent"
+                >
+                  {siteConfig.phone}
+                </a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Mail size={15} className="shrink-0 text-accent" />
                 <a
                   href={`mailto:${siteConfig.social.email}`}
                   className="hover:text-accent"
@@ -96,21 +118,16 @@ export default function Footer() {
                   {siteConfig.social.email}
                 </a>
               </li>
-              <li>
-                <Link href="/contact" className="hover:text-accent">
-                  Contact form →
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-line pt-8 text-xs text-muted md:flex-row">
           <p>
-            © {new Date().getFullYear()} {siteConfig.name}. All rights
+            © {new Date().getFullYear()} {siteConfig.fullName}. All rights
             reserved.
           </p>
-          <p>Built for performance. Trained under pressure.</p>
+          <p>Coached classes, seven days a week.</p>
         </div>
       </div>
     </footer>

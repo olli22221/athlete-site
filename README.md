@@ -1,9 +1,9 @@
-# Personal Brand — Athlete & Performance Coach
+# FORGE — CrossFit & Hyrox
 
-A cinematic personal website built with Next.js (App Router), TypeScript,
-Tailwind CSS, and Framer Motion. Includes a product showcase (apparel,
-weight vests, equipment) and a "Talk to my AI Clone" page wired up for
-[Tavus](https://www.tavus.io).
+A cinematic website for a CrossFit and Hyrox gym, built with Next.js (App
+Router), TypeScript, Tailwind CSS and Framer Motion. Includes a class
+timetable, membership pricing, coach roster, gym shop, and an AI coach powered
+by [Tavus](https://www.tavus.io).
 
 ## Getting Started
 
@@ -14,93 +14,85 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Personalizing the content
+## Rebranding it
 
-Almost everything on the site — name, tagline, bio, stats, services,
-testimonials, and social links — comes from a single file:
+Almost all copy lives in a handful of data files — you should not need to touch
+a component to make this your gym:
 
-- `src/lib/site-config.ts`
+| File | Controls |
+|---|---|
+| `src/lib/site-config.ts` | Gym name, tagline, address, phone, stats, programmes, testimonials, socials |
+| `src/lib/schedule.ts` | Class types (with colours) and the full weekly timetable |
+| `src/lib/memberships.ts` | Pricing tiers and the free-trial offer |
+| `src/lib/coaches.ts` | Coach roster, bios and certifications |
+| `src/lib/products.ts` | Shop catalogue |
+| `src/lib/scenes.ts` | The homepage scroll sequence |
 
-The product catalog (apparel, weight vests, equipment) lives in:
+The gym name appears everywhere via `siteConfig.name` / `siteConfig.fullName`,
+so renaming is a one-line change.
 
-- `src/lib/products.ts`
-
-Edit these files and the whole site updates. Products currently use
-stylized gradient tiles instead of photos — swap in real product photography
-by adding an `image` field/`<Image>` usage once you have shots, or drop
-files into `public/images/` and reference them.
-
-## The cinematic scroll sequence
-
-The homepage centrepiece is a scroll-pinned title sequence: five full-viewport
-scenes (soccer pitch → calisthenics park → gym → hill sprints → Miami
-penthouse) that cross-fade into one another with a slow Ken Burns push,
-letterbox bars, and a progress rail.
-
-- Scene copy, image paths, and per-scene crop focal points:
-  `src/lib/scenes.ts` — add or remove entries and the section resizes itself
-- The scroll rig: `src/components/CinematicScroll.tsx`
-- The images themselves: `public/images/scenes/` (see the README in that
-  folder for download + WebP conversion instructions)
-
-It respects `prefers-reduced-motion` — the push-in and parallax are disabled
-for visitors who've asked for reduced motion, while the cross-fade remains.
-
-Images were generated with [Higgsfield](https://higgsfield.ai) using the
-`soul_2` model at 2048×1152. A fixed "character bible" and grade string are
-repeated verbatim in every prompt, which is what keeps the same person and the
-same film look across all five scenes — worth preserving if you regenerate.
+Class counts are derived, not hardcoded: the homepage and timetable headline
+call `totalWeeklyClasses()`, so adding a session updates the copy automatically.
 
 ## Pages
 
-- `/` — cinematic landing page: hero, scroll sequence, about, stats,
-  coaching/services, featured gear, AI clone teaser, testimonials, final CTA
-- `/products` — full catalog with category filtering
-- `/products/[slug]` — product detail page
-- `/clone` — the Tavus-powered "Talk to my AI Clone" experience
-- `/contact` — contact form (currently opens the visitor's email client —
-  swap the `<form>` action in `src/app/contact/page.tsx` for a real form
-  provider like Formspree or Resend when you're ready to collect
-  submissions server-side)
+- `/` — hero, cinematic scroll sequence, about, stats, programmes, free-trial
+  block, membership, coaches, shop preview, AI coach, testimonials
+- `/schedule` — weekly timetable, filterable by day and class type
+- `/membership` — pricing tiers, free trial, and FAQs
+- `/coaches` — coach roster with credentials
+- `/shop`, `/shop/[slug]` — gym merch and Hyrox gear (showcase only, no checkout)
+- `/coach-ai` — the Tavus-powered AI coach
+- `/contact` — free-class booking enquiry form
 
-## Wiring up Tavus (AI Clone)
+## The cinematic scroll sequence
 
-The `/clone` page and its API routes are fully built, just waiting on
-credentials:
+Five full-viewport scenes (the box → sled push → group class → ergs → race day)
+cross-fade into one another with a slow Ken Burns push, letterbox bars, and a
+progress rail.
 
-1. Create an account and a **replica** at [platform.tavus.io](https://platform.tavus.io).
+- Scene copy, image paths and crop focal points: `src/lib/scenes.ts`
+- The scroll rig: `src/components/CinematicScroll.tsx`
+- The images: `public/images/scenes/` — see the README there for download and
+  WebP conversion instructions
+
+Opacity is driven by explicit scalar functions (`sceneOpacity` / `sceneTravel`)
+rather than keyframe arrays, so behaviour at the range edges is unambiguous:
+each scene is fully opaque only inside its own window, with a clean 50/50
+two-way dissolve at boundaries. It respects `prefers-reduced-motion` — the
+push-in and parallax are disabled, the cross-fade remains.
+
+## Wiring up Tavus (AI Coach)
+
+The `/coach-ai` page and its API routes are complete and waiting on credentials:
+
+1. Create a replica at [platform.tavus.io](https://platform.tavus.io).
 2. Copy `.env.example` to `.env.local`.
-3. Fill in `TAVUS_API_KEY` and `TAVUS_REPLICA_ID` (and optionally
-   `TAVUS_PERSONA_ID` if you've set up a persona).
-4. Restart the dev server (or redeploy). The "AI Clone coming soon" card
-   on `/clone` will automatically switch to a live "Start Conversation"
-   button.
+3. Fill in `TAVUS_API_KEY` and `TAVUS_REPLICA_ID` (optionally `TAVUS_PERSONA_ID`).
+4. Restart. The "AI Coach coming soon" card flips to a live video conversation
+   automatically.
+
+Your API key is read server-side only and never reaches the browser.
 
 Relevant files:
 
-- `src/app/api/tavus/status/route.ts` — tells the frontend whether Tavus is configured
-- `src/app/api/tavus/create-conversation/route.ts` — creates a live Tavus CVI conversation
-- `src/app/api/tavus/end-conversation/route.ts` — ends a conversation early
-- `src/components/TavusClone.tsx` — the client widget (handles all states: unconfigured, loading, active call, error)
+- `src/app/api/tavus/status/route.ts` — reports whether Tavus is configured
+- `src/app/api/tavus/create-conversation/route.ts` — starts a Tavus CVI session
+- `src/app/api/tavus/end-conversation/route.ts` — ends one early
+- `src/components/TavusCoach.tsx` — the widget (handles unconfigured, loading,
+  live and error states)
 
-Your `TAVUS_API_KEY` never reaches the browser — it's only read server-side
-inside the API routes.
+## Known placeholders
 
-## Store / checkout
+These are deliberately fake and should be replaced before launch:
 
-The shop is currently a showcase catalog (no payments). Each product page
-has a "Notify Me When Available" button that opens an email draft. When
-you're ready to sell for real, the most common next step is wiring up
-[Stripe Checkout](https://stripe.com/docs/payments/checkout) from the
-`ProductPurchasePanel` component.
-
-## Tech stack
-
-- [Next.js 16](https://nextjs.org) (App Router, Turbopack)
-- TypeScript
-- Tailwind CSS v4
-- Framer Motion (scroll reveals, counters)
-- lucide-react (icons)
+- Gym name, address, phone and email in `src/lib/site-config.ts`
+- All member testimonials and coach profiles
+- Stats (member counts, Hyrox finishers) in `src/lib/site-config.ts`
+- Membership prices in `src/lib/memberships.ts`
+- The contact form posts via `mailto:` — swap for Formspree, Resend or your
+  gym CRM before taking real bookings
+- Scene imagery is AI-generated; real photos of your gym will outperform it
 
 ## Build
 

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ArrowUpRight, Dumbbell, Shirt, Tag } from "lucide-react";
-import type { Product } from "@/lib/products";
+import type { Product, ProductCategory } from "@/lib/products";
 import { categoryLabels } from "@/lib/products";
 
-const categoryIcon = {
+const categoryIcon: Record<ProductCategory, typeof Shirt> = {
   apparel: Shirt,
-  equipment: Dumbbell,
+  competition: Dumbbell,
   accessories: Tag,
 };
 
@@ -14,7 +14,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/shop/${product.slug}`}
       className="group relative block overflow-hidden rounded-2xl border border-line bg-surface transition-colors hover:border-accent/50"
     >
       <div

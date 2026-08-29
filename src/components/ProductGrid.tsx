@@ -8,7 +8,7 @@ import { categoryLabels, products, type ProductCategory } from "@/lib/products";
 const filters: Array<{ label: string; value: ProductCategory | "all" }> = [
   { label: "All", value: "all" },
   { label: categoryLabels.apparel, value: "apparel" },
-  { label: categoryLabels.equipment, value: "equipment" },
+  { label: categoryLabels.competition, value: "competition" },
   { label: categoryLabels.accessories, value: "accessories" },
 ];
 

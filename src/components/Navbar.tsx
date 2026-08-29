@@ -6,11 +6,11 @@ import { Menu, X } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 
 const links = [
-  { href: "/#about", label: "About" },
-  { href: "/#training", label: "Training" },
-  { href: "/products", label: "Shop" },
-  { href: "/clone", label: "AI Clone" },
-  { href: "/contact", label: "Contact" },
+  { href: "/schedule", label: "Timetable" },
+  { href: "/membership", label: "Membership" },
+  { href: "/coaches", label: "Coaches" },
+  { href: "/shop", label: "Shop" },
+  { href: "/coach-ai", label: "AI Coach" },
 ];
 
 export default function Navbar() {
@@ -35,18 +35,18 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
         <Link
           href="/"
-          className="font-display text-2xl tracking-widest text-foreground"
+          className="font-display text-2xl tracking-[0.2em] text-foreground"
         >
-          {siteConfig.shortName}
+          {siteConfig.name}
           <span className="text-accent">.</span>
         </Link>
 
-        <ul className="hidden items-center gap-9 md:flex">
+        <ul className="hidden items-center gap-8 lg:flex">
           {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="text-sm uppercase tracking-[0.15em] text-muted transition-colors hover:text-accent"
+                className="text-sm uppercase tracking-[0.14em] text-muted transition-colors hover:text-accent"
               >
                 {link.label}
               </Link>
@@ -55,15 +55,15 @@ export default function Navbar() {
         </ul>
 
         <Link
-          href="/clone"
-          className="hidden rounded-full border border-accent/70 px-5 py-2 text-xs uppercase tracking-[0.2em] text-accent transition-colors hover:bg-accent hover:text-black md:inline-block"
+          href="/contact"
+          className="hidden rounded-full bg-accent px-5 py-2 text-xs uppercase tracking-[0.18em] text-black transition-transform hover:-translate-y-0.5 lg:inline-block"
         >
-          Talk to Me
+          Free Class
         </Link>
 
         <button
           aria-label="Toggle menu"
-          className="text-foreground md:hidden"
+          className="text-foreground lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={26} /> : <Menu size={26} />}
@@ -71,7 +71,7 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-line bg-background/95 backdrop-blur-md md:hidden">
+        <div className="border-t border-line bg-background/95 backdrop-blur-md lg:hidden">
           <ul className="flex flex-col gap-1 px-6 py-4">
             {links.map((link) => (
               <li key={link.href}>
@@ -84,6 +84,15 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            <li className="pt-3">
+              <Link
+                href="/contact"
+                onClick={() => setOpen(false)}
+                className="block rounded-full bg-accent px-6 py-3 text-center text-sm uppercase tracking-[0.15em] text-black"
+              >
+                Claim your free class
+              </Link>
+            </li>
           </ul>
         </div>
       )}

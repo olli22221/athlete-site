@@ -9,10 +9,15 @@ import {
   categoryLabels,
   getProductBySlug,
   products,
+  type ProductCategory,
 } from "@/lib/products";
 import { siteConfig } from "@/lib/site-config";
 
-const categoryIcon = { apparel: Shirt, equipment: Dumbbell, accessories: Tag };
+const categoryIcon: Record<ProductCategory, typeof Shirt> = {
+  apparel: Shirt,
+  competition: Dumbbell,
+  accessories: Tag,
+};
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -50,7 +55,7 @@ export default async function ProductDetailPage({
     <div className="bg-background pb-28 pt-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Link
-          href="/products"
+          href="/shop"
           className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.15em] text-muted hover:text-accent"
         >
           <ArrowLeft size={16} />

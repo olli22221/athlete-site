@@ -5,7 +5,7 @@ import { Loader2, PhoneOff, Sparkles, Video } from "lucide-react";
 
 type Status = "checking" | "unconfigured" | "idle" | "loading" | "active" | "error";
 
-export default function TavusClone() {
+export default function TavusCoach() {
   const [status, setStatus] = useState<Status>("checking");
   const [conversationUrl, setConversationUrl] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -108,7 +108,7 @@ export default function TavusClone() {
       {status === "unconfigured" ? (
         <>
           <h3 className="font-display mt-6 text-2xl">
-            AI Clone coming soon
+            AI Coach coming soon
           </h3>
           <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
             This is fully wired up to{" "}
@@ -152,8 +152,8 @@ export default function TavusClone() {
             Ready when you are
           </h3>
           <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-            Starts a live, face-to-face video conversation with my AI
-            clone. You&apos;ll be asked to allow camera & microphone
+            Starts a live, face-to-face video conversation with our AI
+            coach. You&apos;ll be asked to allow camera & microphone
             access.
           </p>
           <button

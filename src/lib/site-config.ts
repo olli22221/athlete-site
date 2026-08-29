@@ -1,78 +1,86 @@
 // ---------------------------------------------------------------------------
-// Single source of truth for the personal brand content.
-// Edit the values below to personalize the site — nothing else needs to change.
+// Single source of truth for the gym's brand + copy.
+// Change the values below to rebrand the whole site — nothing else to touch.
 // ---------------------------------------------------------------------------
 
 export const siteConfig = {
-  name: "Jordan Blake",
-  shortName: "JB",
-  role: "Athlete · Performance Coach",
-  tagline: "BUILT IN THE DARK. PROVEN IN THE LIGHT.",
+  name: "FORGE",
+  shortName: "FG",
+  fullName: "FORGE — CrossFit & Hyrox",
+  role: "CrossFit · Hyrox · Strength",
+  tagline: "BUILT BY WORK. NOT BY WORDS.",
   heroSubtitle:
-    "Professional athlete turned performance coach. I help driven people train like competitors — in the gym, on the field, and in life.",
-  location: "Los Angeles, CA",
+    "A CrossFit and Hyrox gym for people who want to be measurably fitter. Coached classes, real programming, and a room full of people who show up.",
+
+  address: {
+    line1: "Unit 7, Kingsway Industrial Estate",
+    line2: "Manchester M11 4DF",
+    maps: "https://maps.google.com/",
+  },
+  phone: "+44 161 000 0000",
 
   bio: {
-    heading: "Not just a coach. A competitor.",
+    heading: "Two disciplines. One engine.",
     paragraphs: [
-      "I spent a decade competing at the highest level before I ever coached a single client. That's the difference — every program I write has been stress-tested on my own body, under real pressure, on real competition days.",
-      "Today I split my time between training my own body, coaching a small roster of athletes and everyday people who want to move like one, and building tools — like the AI clone on this site — that make elite coaching accessible to anyone, anywhere, any time.",
-      "No fluff, no fads. Just programming that's earned its place through years of trial, failure, and podiums.",
+      "FORGE is built around two things that work: CrossFit for broad, general strength and skill, and Hyrox for the engine that carries it. Most gyms pick one. We coach both, and we program them so they feed each other instead of fighting.",
+      "Every class is coached start to finish — warm-up, skill, workout, cool-down. Every movement is scaled to the person in front of us, whether that's a first-timer who's never held a barbell or an athlete chasing a sub-70 Hyrox.",
+      "No mirrors, no posing, no contracts you can't leave. Just a well-run room, honest programming, and a standard everyone is held to.",
     ],
   },
 
   stats: [
-    { label: "Years Competing", value: 11, suffix: "+" },
-    { label: "Athletes Coached", value: 480, suffix: "+" },
-    { label: "Podium Finishes", value: 27, suffix: "" },
-    { label: "Countries Trained In", value: 14, suffix: "" },
+    { label: "Active Members", value: 340, suffix: "+" },
+    { label: "Classes Per Week", value: 62, suffix: "" },
+    { label: "Certified Coaches", value: 9, suffix: "" },
+    { label: "Hyrox Finishers", value: 118, suffix: "" },
   ],
 
-  services: [
+  // Program pillars shown on the homepage
+  programs: [
     {
-      title: "1:1 Coaching",
+      title: "CrossFit Classes",
       description:
-        "Fully customized programming, weekly check-ins, and direct access — built around your goals, your schedule, your body.",
-      icon: "Target",
+        "Constantly varied, coached, and scaled to you. Strength, gymnastics, and conditioning in a 60-minute class.",
+      icon: "Dumbbell",
     },
     {
-      title: "Online Programming",
+      title: "Hyrox Training",
       description:
-        "Structured strength & conditioning plans delivered app-side. Train on your own time with a system that adapts as you progress.",
-      icon: "LineChart",
+        "Race-specific work: sled push and pull, burpee broad jumps, wall balls, and the running that ties it together.",
+      icon: "Timer",
     },
     {
-      title: "Performance Camps",
+      title: "Strength & Barbell",
       description:
-        "Small-group, high-intensity training blocks for athletes who want to peak for a season, a combine, or a competition.",
-      icon: "Flame",
+        "Dedicated lifting blocks. Squat, press, pull, and Olympic lifts on a progressive cycle with real coaching.",
+      icon: "Trophy",
     },
     {
-      title: "Nutrition Systems",
+      title: "On-Ramp for Beginners",
       description:
-        "No crash diets. Sustainable fueling strategies built around performance, recovery, and how your body actually responds.",
-      icon: "Salad",
+        "Never trained like this before? A four-session intro that teaches the movements before you join a class.",
+      icon: "Sparkles",
     },
   ],
 
   testimonials: [
     {
       quote:
-        "Jordan doesn't coach like someone who read about training. Every session feels like it's coming from someone who's actually been there.",
-      name: "Marcus T.",
-      role: "Amateur MMA Competitor",
+        "I'd never touched a barbell. Six months later I finished my first Hyrox. The on-ramp made the difference — I never once felt like the person holding the class up.",
+      name: "Priya S.",
+      role: "Member, 1 year",
     },
     {
       quote:
-        "Twelve weeks in and I moved better than I had in a decade. The programming is brutal in the best way.",
-      name: "Sara K.",
-      role: "Online Coaching Client",
+        "The coaching is the product. They scale everything properly, and they actually correct you instead of just counting reps.",
+      name: "Tom H.",
+      role: "Member, 3 years",
     },
     {
       quote:
-        "The AI clone alone answered more of my form questions at 11pm than any app I've paid for.",
-      name: "Devon R.",
-      role: "Performance Camp Alum",
+        "I came from a globo gym where nobody knew my name. Here I get texts if I miss a week. That's why I still turn up at 6am.",
+      name: "Daniela K.",
+      role: "Member, 2 years",
     },
   ],
 
