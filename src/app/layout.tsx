@@ -1,28 +1,44 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Inter } from "next/font/google";
+import { Archivo, IBM_Plex_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import TelemetryBar from "@/components/TelemetryBar";
+import PlaceholderNotice from "@/components/PlaceholderNotice";
 import { siteConfig } from "@/lib/site-config";
 
-const bebas = Bebas_Neue({
-  variable: "--font-bebas",
-  weight: "400",
+// Archivo is loaded with its width axis so the display face can run wide.
+// Sports brands reach for condensed type by reflex; the board in the hall is
+// wide, and the whole identity hangs off that inversion.
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  axes: ["wdth"],
+});
+
+const publicSans = Public_Sans({
+  variable: "--font-public",
   subsets: ["latin"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
-  title: `${siteConfig.fullName}`,
-  description: siteConfig.heroSubtitle,
-  metadataBase: new URL("https://example.com"),
+  title: {
+    default: `${siteConfig.name} — ${siteConfig.athlete.name}`,
+    template: `%s — ${siteConfig.name}`,
+  },
+  description: siteConfig.intro,
+  metadataBase: new URL(siteUrl),
   openGraph: {
-    title: `${siteConfig.fullName}`,
-    description: siteConfig.heroSubtitle,
+    title: `${siteConfig.name} — ${siteConfig.athlete.name}`,
+    description: siteConfig.intro,
     type: "website",
   },
 };
@@ -34,7 +50,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${bebas.variable} ${inter.variable} antialiased`}>
+      <body
+        className={`${archivo.variable} ${publicSans.variable} ${plexMono.variable} antialiased`}
+      >
+        <PlaceholderNotice />
+        <TelemetryBar />
         <Navbar />
         <main>{children}</main>
         <Footer />

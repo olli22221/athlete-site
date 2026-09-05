@@ -1,198 +1,123 @@
 import type { Metadata } from "next";
-import { Mail, MapPin, Phone } from "lucide-react";
-import Reveal from "@/components/Reveal";
-import Kicker from "@/components/Kicker";
-import CinematicBackdrop from "@/components/CinematicBackdrop";
 import BrandIcon from "@/components/BrandIcon";
 import { siteConfig } from "@/lib/site-config";
+import { upcomingRaces, formatDate } from "@/lib/races";
 
 export const metadata: Metadata = {
-  title: `Contact — ${siteConfig.fullName}`,
+  title: "Contact",
   description:
-    "Book your free class, ask about membership, or find the gym.",
+    "Sponsorship, press and collaboration enquiries — and what to put in the first email so it gets a useful answer.",
 };
 
 export default function ContactPage() {
+  const upcoming = upcomingRaces().slice(0, 4);
+
   return (
-    <section className="relative overflow-hidden bg-background pb-28 pt-40">
-      <CinematicBackdrop variant="section" />
-      <div className="relative mx-auto max-w-6xl px-6 lg:px-10">
-        <Reveal>
-          <Kicker>Get started</Kicker>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <h1 className="font-display mt-5 max-w-2xl text-balance text-5xl leading-tight sm:text-6xl">
-            Book your free class.
-          </h1>
-        </Reveal>
-        <Reveal delay={0.2}>
-          <p className="mt-6 max-w-lg text-muted">
-            Tell us a little about where you&apos;re at and we&apos;ll get you
-            into a session that suits. We reply within one working day.
+    <>
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-[1400px] px-4 py-12">
+          <p className="label">Sponsorship · press · collaboration</p>
+          <h1 className="board mt-3 text-[clamp(2.5rem,7vw,5rem)]">Contact</h1>
+          <p className="mt-5 max-w-2xl text-lg text-ink-soft">
+            One address, read by me. The fastest way to a useful answer is to
+            name a specific race and what you would want from it.
           </p>
-        </Reveal>
-
-        <div className="mt-16 grid gap-12 lg:grid-cols-[1.2fr_1fr]">
-          <Reveal delay={0.25}>
-            <form
-              action={`mailto:${siteConfig.social.email}`}
-              method="POST"
-              encType="text/plain"
-              className="space-y-6"
-            >
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-muted">
-                    Name
-                  </label>
-                  <input
-                    name="name"
-                    required
-                    className="mt-2 w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground outline-none focus:border-accent"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-muted">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    className="mt-2 w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground outline-none focus:border-accent"
-                    placeholder="you@email.com"
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-muted">
-                    What are you after?
-                  </label>
-                  <select
-                    name="interest"
-                    className="mt-2 w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground outline-none focus:border-accent"
-                  >
-                    <option>Free trial class</option>
-                    <option>On-Ramp for beginners</option>
-                    <option>CrossFit membership</option>
-                    <option>Hyrox race team</option>
-                    <option>Drop-in while visiting</option>
-                    <option>Something else</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-muted">
-                    Your experience
-                  </label>
-                  <select
-                    name="experience"
-                    className="mt-2 w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground outline-none focus:border-accent"
-                  >
-                    <option>Complete beginner</option>
-                    <option>Some gym experience</option>
-                    <option>CrossFit experience</option>
-                    <option>Competing / race-focused</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs uppercase tracking-[0.2em] text-muted">
-                  Anything we should know?
-                </label>
-                <textarea
-                  name="message"
-                  rows={5}
-                  className="mt-2 w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground outline-none focus:border-accent"
-                  placeholder="Injuries, goals, which days suit you…"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-medium uppercase tracking-[0.15em] text-black transition-transform hover:-translate-y-0.5"
-              >
-                Book my free class
-              </button>
-              <p className="text-xs text-muted">
-                Opens your email client — swap this for a form provider (e.g.
-                Formspree, Resend) or your gym CRM when you&apos;re ready to
-                collect bookings properly.
-              </p>
-            </form>
-          </Reveal>
-
-          <Reveal delay={0.3}>
-            <div className="rounded-2xl border border-line bg-surface p-8">
-              <h3 className="font-display text-2xl">Find the gym</h3>
-              <ul className="mt-6 space-y-5 text-sm">
-                <li className="flex gap-3">
-                  <MapPin size={18} className="mt-0.5 shrink-0 text-accent" />
-                  <a
-                    href={siteConfig.address.maps}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-accent"
-                  >
-                    {siteConfig.address.line1}
-                    <br />
-                    {siteConfig.address.line2}
-                  </a>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Phone size={18} className="shrink-0 text-accent" />
-                  <a
-                    href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
-                    className="hover:text-accent"
-                  >
-                    {siteConfig.phone}
-                  </a>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Mail size={18} className="shrink-0 text-accent" />
-                  <a
-                    href={`mailto:${siteConfig.social.email}`}
-                    className="hover:text-accent"
-                  >
-                    {siteConfig.social.email}
-                  </a>
-                </li>
-                <li className="flex items-center gap-3">
-                  <BrandIcon
-                    name="instagram"
-                    size={18}
-                    className="shrink-0 text-accent"
-                  />
-                  <a
-                    href={siteConfig.social.instagram}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-accent"
-                  >
-                    Instagram
-                  </a>
-                </li>
-              </ul>
-
-              <div className="mt-8 border-t border-line pt-6">
-                <p className="text-sm text-muted">
-                  Got a question first? Ask our{" "}
-                  <a
-                    href="/coach-ai"
-                    className="text-accent underline underline-offset-4"
-                  >
-                    AI coach
-                  </a>{" "}
-                  — it&apos;ll tell you what a class actually involves.
-                </p>
-              </div>
-            </div>
-          </Reveal>
         </div>
+      </section>
+
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-12 lg:grid-cols-[1fr_1fr]">
+        <section>
+          <h2 className="board text-2xl">What to include</h2>
+          <ol className="mt-5 flex flex-col gap-px bg-line">
+            <Step n="01" title="Which race">
+              Naming one from the calendar tells me you have looked, and it
+              makes the whole thing concrete instead of hypothetical.
+            </Step>
+            <Step n="02" title="What you want from it">
+              Race-day content, a product in the film, a discount code, an
+              appearance. Anything specific beats &quot;a partnership&quot;.
+            </Step>
+            <Step n="03" title="What the exchange is">
+              Product, fee, revenue share. Saying it up front saves us both
+              three emails.
+            </Step>
+          </ol>
+
+          <p className="mt-8 label">Media kit</p>
+          <p className="mt-2 max-w-md text-sm text-ink-soft">
+            Reach per platform, audience demographics, past results and formats
+            with prices — sent on request, usually the same day.
+          </p>
+
+          <a
+            href={`mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(
+              "Sponsorship enquiry"
+            )}`}
+            className="board-sm mt-6 inline-block bg-signal px-5 py-3 text-sm text-signal-ink"
+          >
+            {siteConfig.contactEmail}
+          </a>
+        </section>
+
+        <aside className="flex flex-col gap-8">
+          <div>
+            <p className="label">Racing next</p>
+            <ul className="mt-3 flex flex-col gap-px bg-line">
+              {upcoming.map((race) => (
+                <li
+                  key={race.slug}
+                  className="flex items-baseline justify-between gap-4 bg-panel px-4 py-3"
+                >
+                  <span className="board-sm text-sm">{race.city}</span>
+                  <span className="tnum text-xs text-muted">
+                    {formatDate(race.date)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="label">Elsewhere</p>
+            <ul className="mt-3 flex flex-col gap-px bg-line">
+              {siteConfig.socials.map((social) => (
+                <li key={social.name} className="bg-panel">
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-4 px-4 py-3 text-sm text-ink-soft hover:text-signal"
+                  >
+                    <span className="flex items-center gap-2">
+                      <BrandIcon name={social.icon} size={15} />
+                      {social.name}
+                    </span>
+                    <span className="tnum text-xs text-muted">{social.handle}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
       </div>
-    </section>
+    </>
+  );
+}
+
+function Step({
+  n,
+  title,
+  children,
+}: {
+  n: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="bg-panel px-5 py-4">
+      <span className="tnum text-xs text-signal">{n}</span>
+      <p className="board-sm mt-1 text-base">{title}</p>
+      <p className="mt-1 text-sm text-ink-soft">{children}</p>
+    </li>
   );
 }

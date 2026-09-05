@@ -1,26 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, Dumbbell, Shirt, Tag } from "lucide-react";
-import Reveal from "@/components/Reveal";
-import ProductCard from "@/components/ProductCard";
-import ProductPurchasePanel from "@/components/ProductPurchasePanel";
 import {
   categoryLabels,
+  formatPrice,
   getProductBySlug,
   products,
-  type ProductCategory,
 } from "@/lib/products";
 import { siteConfig } from "@/lib/site-config";
 
-const categoryIcon: Record<ProductCategory, typeof Shirt> = {
-  apparel: Shirt,
-  competition: Dumbbell,
-  accessories: Tag,
-};
-
 export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+  return products.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({
@@ -31,13 +21,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = getProductBySlug(slug);
   if (!product) return {};
-  return {
-    title: `${product.name} — ${siteConfig.name}`,
-    description: product.tagline,
-  };
+  return { title: product.name, description: product.tagline };
 }
 
-export default async function ProductDetailPage({
+export default async function ProductPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -46,83 +33,90 @@ export default async function ProductDetailPage({
   const product = getProductBySlug(slug);
   if (!product) notFound();
 
-  const Icon = categoryIcon[product.category];
-  const related = products
-    .filter((p) => p.slug !== product.slug && p.category === product.category)
-    .slice(0, 3);
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    offers: {
+      "@type": "Offer",
+      price: (product.priceCents / 100).toFixed(2),
+      priceCurrency: "EUR",
+      availability: product.available
+        ? "https://schema.org/InStock"
+        : "https://schema.org/PreOrder",
+    },
+  };
 
   return (
-    <div className="bg-background pb-28 pt-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <Link
-          href="/shop"
-          className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.15em] text-muted hover:text-accent"
-        >
-          <ArrowLeft size={16} />
-          Back to Shop
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+
+      <div className="mx-auto max-w-[1400px] px-4 py-10">
+        <Link href="/shop" className="label hover:!text-signal">
+          ← Shop
         </Link>
 
-        <div className="mt-8 grid gap-12 lg:grid-cols-2">
-          <Reveal>
-            <div
-              className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-line"
-              style={{
-                background: `linear-gradient(135deg, ${product.gradient[0]}, ${product.gradient[1]})`,
-              }}
-            >
-              <div className="absolute inset-0 opacity-30 mix-blend-overlay [background-image:radial-gradient(circle_at_30%_20%,#fff,transparent_45%)]" />
-              <Icon size={140} strokeWidth={1} className="text-white/20" />
-              <span className="absolute left-5 top-5 rounded-full border border-white/20 bg-black/30 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/80 backdrop-blur-sm">
-                {categoryLabels[product.category]}
-              </span>
-            </div>
-          </Reveal>
-
+        <div className="mt-8 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
           <div>
-            <Reveal>
-              <h1 className="font-display text-balance text-4xl leading-tight sm:text-5xl">
-                {product.name}
-              </h1>
-              <p className="mt-3 text-lg text-muted">{product.tagline}</p>
-              <p className="font-display mt-6 text-4xl text-accent">
-                ${product.price}
-              </p>
-              <p className="mt-6 leading-relaxed text-muted">
-                {product.description}
-              </p>
+            <p className="label">{categoryLabels[product.category]}</p>
+            <h1 className="board mt-3 text-[clamp(2.25rem,5vw,3.75rem)]">
+              {product.name}
+            </h1>
+            <p className="mt-4 text-lg text-signal">{product.tagline}</p>
+            <p className="mt-6 max-w-xl leading-relaxed text-ink-soft">
+              {product.description}
+            </p>
 
-              <ul className="mt-6 space-y-3">
-                {product.details.map((d) => (
-                  <li key={d} className="flex items-start gap-3 text-sm">
-                    <Check
-                      size={16}
-                      className="mt-0.5 shrink-0 text-accent"
-                    />
-                    <span className="text-foreground/90">{d}</span>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-
-            <Reveal delay={0.1} className="mt-8">
-              <ProductPurchasePanel product={product} />
-            </Reveal>
-          </div>
-        </div>
-
-        {related.length > 0 && (
-          <div className="mt-28">
-            <h2 className="font-display text-3xl">You might also like</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((p, i) => (
-                <Reveal key={p.slug} delay={i * 0.08}>
-                  <ProductCard product={p} />
-                </Reveal>
+            <ul className="mt-8 flex flex-col gap-px bg-line">
+              {product.details.map((detail) => (
+                <li key={detail} className="bg-panel px-4 py-3 text-sm text-ink-soft">
+                  {detail}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
-        )}
+
+          <aside className="self-start border border-line bg-panel p-6">
+            <p className="tnum text-3xl">{formatPrice(product.priceCents)}</p>
+
+            {product.sizes && (
+              <>
+                <p className="label mt-6">Sizes</p>
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {product.sizes.map((size) => (
+                    <li
+                      key={size}
+                      className="tnum border border-line px-3 py-1.5 text-sm text-muted"
+                    >
+                      {size}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            <div className="mt-6 border-l-2 border-signal bg-ground px-4 py-3">
+              <p className="board-sm text-sm">Not orderable yet</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                The shop opens with the first qualification attempt. Ask to be
+                told when it does:
+              </p>
+              <a
+                href={`mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(
+                  `Tell me when ${product.name} is available`
+                )}`}
+                className="board-sm mt-4 block bg-signal px-4 py-3 text-center text-sm text-signal-ink"
+              >
+                Email me about it
+              </a>
+            </div>
+          </aside>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

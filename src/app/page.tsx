@@ -1,364 +1,233 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarDays,
-  Dumbbell,
-  Sparkles,
-  Timer,
-  Trophy,
-} from "lucide-react";
+import Splitboard from "@/components/Splitboard";
 import Reveal from "@/components/Reveal";
-import Counter from "@/components/Counter";
-import Marquee from "@/components/Marquee";
-import Kicker from "@/components/Kicker";
-import CinematicBackdrop from "@/components/CinematicBackdrop";
-import CinematicScroll from "@/components/CinematicScroll";
-import ProductCard from "@/components/ProductCard";
-import CoachGrid from "@/components/CoachGrid";
-import MembershipCards from "@/components/MembershipCards";
-import TrialCTA from "@/components/TrialCTA";
+import {
+  SEGMENTS,
+  daysUntil,
+  finishedRaces,
+  formatClock,
+  formatDate,
+  gapToTarget,
+  nextRace,
+  personalBest,
+  runTotal,
+  upcomingRaces,
+} from "@/lib/races";
 import { siteConfig } from "@/lib/site-config";
-import { getFeaturedProducts } from "@/lib/products";
-import { totalWeeklyClasses } from "@/lib/schedule";
-
-const icons = { Dumbbell, Timer, Trophy, Sparkles };
 
 export default function Home() {
-  const featured = getFeaturedProducts();
+  const done = finishedRaces();
+  const latest = done[0];
+  const previous = done[1];
+  const best = personalBest();
+  const gap = gapToTarget(siteConfig.target.seconds);
+  const next = nextRace();
+  const upcoming = upcomingRaces().slice(0, 3);
+
+  const runSeconds = latest ? runTotal(latest) : undefined;
+  const runShare =
+    latest && runSeconds ? Math.round((runSeconds / latest.result!.totalSeconds) * 100) : undefined;
 
   return (
     <>
-      {/* ---------------------------------------------------------------- */}
-      {/* HERO                                                              */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="grain relative flex min-h-[100svh] items-center overflow-hidden bg-background">
-        <CinematicBackdrop variant="hero" />
-
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-28 pb-20 lg:px-10">
-          <Reveal>
-            <Kicker>{siteConfig.role}</Kicker>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <h1 className="font-display mt-6 text-balance text-[17vw] leading-[0.85] tracking-[0.02em] text-foreground sm:text-[12vw] lg:text-[9rem]">
-              {siteConfig.name}
-              <span className="text-accent">.</span>
+      {/* --- opener ------------------------------------------------------ */}
+      <section className="border-b border-line">
+        <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-12 lg:grid-cols-[1.05fr_1fr] lg:py-16">
+          <div className="flex flex-col justify-center">
+            <p className="label">
+              {siteConfig.athlete.name} · {siteConfig.athlete.nationality} ·{" "}
+              {siteConfig.athlete.ageGroup}
+            </p>
+            <h1 className="board mt-4 text-[clamp(2.25rem,5vw,4.25rem)]">
+              {siteConfig.tagline}
             </h1>
-          </Reveal>
+            <p className="mt-6 max-w-xl text-lg text-ink-soft">{siteConfig.intro}</p>
 
-          <Reveal delay={0.2}>
-            <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-              {siteConfig.heroSubtitle}
-            </p>
-          </Reveal>
-
-          <Reveal delay={0.3}>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/contact"
-                className="group inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-medium uppercase tracking-[0.15em] text-black transition-transform hover:-translate-y-0.5"
+                href="/races"
+                className="board-sm bg-signal px-5 py-3 text-sm text-signal-ink"
               >
-                Claim Your Free Class
-                <ArrowRight
-                  size={16}
-                  className="transition-transform group-hover:translate-x-1"
-                />
+                The season
               </Link>
               <Link
-                href="/schedule"
-                className="inline-flex items-center gap-2 rounded-full border border-foreground/25 px-7 py-3.5 text-sm font-medium uppercase tracking-[0.15em] text-foreground transition-colors hover:border-accent hover:text-accent"
+                href="/avatar"
+                className="board-sm border border-line px-5 py-3 text-sm hover:border-signal hover:text-signal"
               >
-                <CalendarDays size={16} />
-                See the Timetable
+                Talk to the avatar
               </Link>
             </div>
-          </Reveal>
-        </div>
+          </div>
 
-        <div className="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-muted sm:flex">
-          <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
-          <span className="h-10 w-px animate-pulse bg-gradient-to-b from-accent to-transparent" />
+          {/* The four numbers that define the project. */}
+          <dl className="grid grid-cols-2 gap-px self-start border border-line bg-line">
+            <Stat
+              label="Target"
+              value={siteConfig.target.label}
+              note={siteConfig.target.note}
+            />
+            <Stat
+              label="Best so far"
+              value={best ? formatClock(best.result!.totalSeconds) : "—"}
+              note={best ? `${best.city}, ${formatDate(best.date)}` : "First race pending"}
+            />
+            <Stat
+              label="Gap to standard"
+              value={gap === undefined ? "—" : gap <= 0 ? formatClock(gap) : `+${formatClock(gap)}`}
+              note={gap === undefined ? "No result yet" : gap <= 0 ? "Standard met" : "Still to find"}
+              tone={gap === undefined ? "neutral" : gap <= 0 ? "under" : "over"}
+            />
+            <Stat
+              label="Next race"
+              value={next ? next.city : "—"}
+              note={next ? `${formatDate(next.date)} · T−${daysUntil(next.date)} days` : "Calendar open"}
+            />
+          </dl>
         </div>
       </section>
 
-      <Marquee text="CROSSFIT · HYROX · STRENGTH · CONDITIONING · COMMUNITY · " />
-
-      {/* ---------------------------------------------------------------- */}
-      {/* CINEMATIC SCROLL SEQUENCE                                         */}
-      {/* ---------------------------------------------------------------- */}
-      <CinematicScroll />
-
-      {/* ---------------------------------------------------------------- */}
-      {/* ABOUT + STATS                                                     */}
-      {/* ---------------------------------------------------------------- */}
-      <section id="about" className="relative bg-background py-28">
-        <div className="mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-[1fr_1fr] lg:px-10">
+      {/* --- the splitboard --------------------------------------------- */}
+      {latest && (
+        <section className="mx-auto max-w-[1400px] px-4 py-14">
           <Reveal>
-            <div
-              className="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-2xl border border-line"
-              style={{
-                background:
-                  "linear-gradient(155deg, #17181b 0%, #0d0e0f 60%, #1c2013 100%)",
-              }}
-            >
-              <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_70%_20%,rgba(205,255,77,0.18),transparent_55%)]" />
-              <span className="font-display relative text-[9rem] leading-none text-white/10">
-                {siteConfig.shortName}
-              </span>
-              <span className="absolute bottom-6 left-6 text-xs uppercase tracking-[0.25em] text-muted">
-                Photo placeholder — drop /public/images/gym.jpg
-              </span>
-            </div>
-          </Reveal>
-
-          <div>
-            <Reveal>
-              <Kicker>The Gym</Kicker>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <h2 className="font-display mt-5 text-balance text-4xl leading-tight sm:text-5xl">
-                {siteConfig.bio.heading}
-              </h2>
-            </Reveal>
-            <div className="mt-6 space-y-5">
-              {siteConfig.bio.paragraphs.map((p, i) => (
-                <Reveal key={i} delay={0.15 + i * 0.05}>
-                  <p className="leading-relaxed text-muted">{p}</p>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mx-auto mt-24 max-w-7xl px-6 lg:px-10">
-          <div className="grid grid-cols-2 gap-8 border-t border-line pt-14 sm:grid-cols-4">
-            {siteConfig.stats.map((stat, i) => (
-              <Reveal key={stat.label} delay={i * 0.08}>
-                <p className="font-display text-5xl text-accent sm:text-6xl">
-                  <Counter value={stat.value} suffix={stat.suffix} />
-                </p>
-                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-muted">
-                  {stat.label}
-                </p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* PROGRAMS                                                          */}
-      {/* ---------------------------------------------------------------- */}
-      <section id="programs" className="relative overflow-hidden bg-surface py-28">
-        <CinematicBackdrop variant="section" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-          <Reveal>
-            <Kicker>What we run</Kicker>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
-              {totalWeeklyClasses()} coached classes a week.
-            </h2>
-          </Reveal>
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {siteConfig.programs.map((program, i) => {
-              const Icon = icons[program.icon as keyof typeof icons];
-              return (
-                <Reveal key={program.title} delay={i * 0.08}>
-                  <div className="h-full rounded-2xl border border-line bg-background p-7 transition-colors hover:border-accent/50">
-                    <Icon size={28} strokeWidth={1.5} className="text-accent" />
-                    <h3 className="font-display mt-6 text-xl tracking-wide">
-                      {program.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-muted">
-                      {program.description}
-                    </p>
-                  </div>
-                </Reveal>
-              );
-            })}
-          </div>
-
-          <Reveal delay={0.3}>
-            <div className="mt-14">
-              <Link
-                href="/schedule"
-                className="group inline-flex items-center gap-2 rounded-full border border-foreground/25 px-7 py-3.5 text-sm font-medium uppercase tracking-[0.15em] text-foreground transition-colors hover:border-accent hover:text-accent"
-              >
-                View the full timetable
-                <ArrowRight
-                  size={16}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </Link>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* FREE TRIAL                                                        */}
-      {/* ---------------------------------------------------------------- */}
-      <TrialCTA />
-
-      {/* ---------------------------------------------------------------- */}
-      {/* MEMBERSHIP                                                        */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="bg-background py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <Reveal>
-            <Kicker>Membership</Kicker>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
-              Rolling monthly. No lock-in.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.15}>
-            <p className="mt-5 max-w-lg text-muted">
-              Every plan includes full coaching on every session. Cancel or
-              switch tiers any time with a month&apos;s notice.
-            </p>
-          </Reveal>
-
-          <div className="mt-14">
-            <MembershipCards />
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* COACHES                                                           */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-surface py-28">
-        <CinematicBackdrop variant="section" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-          <Reveal>
-            <Kicker>The Coaches</Kicker>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
-              You&apos;ll know all of them by name.
-            </h2>
-          </Reveal>
-
-          <div className="mt-14">
-            <CoachGrid />
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* SHOP                                                              */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="bg-background py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <Reveal>
-                <Kicker>The Shop</Kicker>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <h2 className="font-display mt-5 text-balance text-4xl leading-tight sm:text-5xl">
-                  Kit that survives the session.
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="label">Latest race</p>
+                <h2 className="board mt-2 text-4xl sm:text-5xl">
+                  {formatClock(latest.result!.totalSeconds)} in {latest.city}
                 </h2>
-              </Reveal>
-            </div>
-            <Reveal delay={0.15}>
-              <Link
-                href="/shop"
-                className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.15em] text-accent"
-              >
-                Shop everything
-                <ArrowRight
-                  size={16}
-                  className="transition-transform group-hover:translate-x-1"
-                />
+              </div>
+              <Link href="/races" className="board-sm text-sm text-signal">
+                All races →
               </Link>
-            </Reveal>
-          </div>
+            </div>
+          </Reveal>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.map((product, i) => (
-              <Reveal key={product.slug} delay={i * 0.08}>
-                <ProductCard product={product} />
-              </Reveal>
-            ))}
+          <Reveal delay={0.1}>
+            <Splitboard race={latest} previous={previous} />
+          </Reveal>
+
+          {latest.result?.note && (
+            <p className="mt-5 max-w-2xl text-ink-soft">{latest.result.note}</p>
+          )}
+
+          {/* Two numbers that are almost never published, and that this site
+              exists to publish. */}
+          <div className="mt-8 grid gap-px border border-line bg-line sm:grid-cols-3">
+            <Panel
+              label="Roxzone"
+              value={formatClock(latest.result!.roxzoneSeconds)}
+              note="Time between stations. The split nobody trains."
+            />
+            <Panel
+              label="Running total"
+              value={runSeconds ? formatClock(runSeconds) : "—"}
+              note={runShare ? `${runShare}% of the race is the eight runs` : ""}
+            />
+            <Panel
+              label="Field"
+              value={
+                latest.result!.placeOverall
+                  ? `${latest.result!.placeOverall} / ${latest.result!.fieldSize}`
+                  : "—"
+              }
+              note="Overall placing"
+            />
           </div>
+        </section>
+      )}
+
+      {/* --- the race as structure -------------------------------------- */}
+      <section className="border-y border-line bg-panel">
+        <div className="mx-auto max-w-[1400px] px-4 py-14">
+          <p className="label">The format</p>
+          <h2 className="board mt-2 max-w-2xl text-3xl sm:text-4xl">
+            Eight runs, eight stations, one clock that never stops
+          </h2>
+          <ol className="mt-8 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+            {SEGMENTS.filter((segment) => segment.kind === "station").map(
+              (station, index) => (
+                <li key={station.id} className="bg-panel p-4">
+                  <span className="tnum text-xs text-signal">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <p className="board-sm mt-2 text-base">{station.label}</p>
+                  <p className="tnum mt-1 text-xs text-muted">{station.detail}</p>
+                </li>
+              )
+            )}
+          </ol>
+          <p className="mt-6 max-w-2xl text-sm text-muted">
+            One kilometre of running before each station. The order never
+            changes, which is what makes the splits comparable between races —
+            and worth publishing.
+          </p>
         </div>
       </section>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* AI COACH                                                          */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="grain relative overflow-hidden bg-surface py-28">
-        <CinematicBackdrop variant="section" />
-        <div className="relative mx-auto max-w-5xl px-6 text-center lg:px-10">
-          <Reveal>
-            <Kicker>
-              <span className="mx-auto flex items-center gap-2">
-                <Sparkles size={14} /> Powered by Tavus AI
-              </span>
-            </Kicker>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="font-display mx-auto mt-6 max-w-3xl text-balance text-4xl leading-tight sm:text-6xl">
-              Not sure if you&apos;re fit enough to start?
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="mx-auto mt-6 max-w-xl leading-relaxed text-muted">
-              Ask our AI coach. It&apos;ll walk you through what a class
-              actually looks like, what Hyrox involves, and how we scale things
-              for complete beginners — in a real face-to-face video chat.
-            </p>
-          </Reveal>
-          <Reveal delay={0.3}>
-            <Link
-              href="/coach-ai"
-              className="mt-10 inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-medium uppercase tracking-[0.15em] text-black transition-transform hover:-translate-y-0.5"
-            >
-              Talk to the AI Coach
-              <ArrowRight size={16} />
+      {/* --- calendar ---------------------------------------------------- */}
+      {upcoming.length > 0 && (
+        <section className="mx-auto max-w-[1400px] px-4 py-14">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="label">Where to find me</p>
+              <h2 className="board mt-2 text-3xl sm:text-4xl">Next up</h2>
+            </div>
+            <Link href="/races" className="board-sm text-sm text-signal">
+              Full calendar →
             </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* TESTIMONIALS                                                      */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="bg-background py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <Reveal>
-            <Kicker>Members</Kicker>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h2 className="font-display mt-5 max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
-              Why they keep turning up.
-            </h2>
-          </Reveal>
-
-          <div className="mt-16 grid gap-6 lg:grid-cols-3">
-            {siteConfig.testimonials.map((t, i) => (
-              <Reveal key={t.name} delay={i * 0.1}>
-                <figure className="flex h-full flex-col justify-between rounded-2xl border border-line bg-surface p-7">
-                  <blockquote className="leading-relaxed text-foreground/90">
-                    &ldquo;{t.quote}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-6 border-t border-line pt-4 text-sm">
-                    <span className="font-medium text-foreground">{t.name}</span>
-                    <span className="block text-xs uppercase tracking-[0.15em] text-muted">
-                      {t.role}
-                    </span>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
           </div>
-        </div>
-      </section>
+
+          <ul className="border border-line">
+            {upcoming.map((race) => (
+              <li
+                key={race.slug}
+                className="grid gap-2 border-b border-line-soft px-4 py-4 last:border-b-0 sm:grid-cols-[130px_1fr_auto] sm:items-center sm:gap-6"
+              >
+                <span className="tnum text-sm text-muted">{formatDate(race.date)}</span>
+                <span>
+                  <span className="board-sm text-base">{race.city}</span>
+                  <span className="ml-2 text-sm text-muted">{race.venue}</span>
+                  <span className="mt-1 block text-sm text-ink-soft">{race.role}</span>
+                </span>
+                <span className="label !text-signal">{race.division}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  note,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  note?: string;
+  tone?: "neutral" | "under" | "over";
+}) {
+  const toneClass =
+    tone === "under" ? "text-under" : tone === "over" ? "text-over" : "text-ink";
+  return (
+    <div className="bg-panel p-5">
+      <dt className="label">{label}</dt>
+      <dd className={`tnum mt-2 text-2xl sm:text-3xl ${toneClass}`}>{value}</dd>
+      {note && <p className="mt-2 text-xs leading-snug text-muted">{note}</p>}
+    </div>
+  );
+}
+
+function Panel({ label, value, note }: { label: string; value: string; note?: string }) {
+  return (
+    <div className="bg-panel p-5">
+      <p className="label">{label}</p>
+      <p className="tnum mt-2 text-3xl">{value}</p>
+      {note && <p className="mt-2 text-xs text-muted">{note}</p>}
+    </div>
   );
 }

@@ -1,45 +1,50 @@
 import type { Metadata } from "next";
-import Reveal from "@/components/Reveal";
-import Kicker from "@/components/Kicker";
-import CinematicBackdrop from "@/components/CinematicBackdrop";
-import ProductGrid from "@/components/ProductGrid";
-import { siteConfig } from "@/lib/site-config";
+import Link from "next/link";
+import { categoryLabels, formatPrice, products } from "@/lib/products";
 
 export const metadata: Metadata = {
-  title: `Shop — ${siteConfig.fullName}`,
-  description: "Gym apparel, Hyrox competition gear, and training accessories.",
+  title: "Shop",
+  description:
+    "Season apparel, race-day kit and split prints. Opening with the first qualification attempt.",
 };
 
 export default function ShopPage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-background pb-16 pt-40">
-        <CinematicBackdrop variant="section" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-          <Reveal>
-            <Kicker>The Shop</Kicker>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h1 className="font-display mt-5 max-w-2xl text-balance text-5xl leading-tight sm:text-6xl">
-              Kit that survives the session.
-            </h1>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="mt-6 max-w-lg text-muted">
-              Gym apparel, Hyrox competition gear, and the accessories we
-              actually hand people on the floor. Members get 10% off with an
-              Unlimited plan. Checkout is launching soon — register interest on
-              any item and we&apos;ll hold one back.
-            </p>
-          </Reveal>
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-[1400px] px-4 py-12">
+          <p className="label">Not open yet</p>
+          <h1 className="board mt-3 text-[clamp(2.5rem,7vw,5rem)]">Shop</h1>
+          <p className="mt-5 max-w-2xl text-lg text-ink-soft">
+            No logo merch. Everything here carries a line from the season
+            instead — which means none of it makes sense until the season does.
+          </p>
+          <p className="mt-4 max-w-2xl text-sm text-muted">
+            The shop opens with the first qualification attempt. Until then this
+            is a preview, and nothing is orderable.
+          </p>
         </div>
       </section>
 
-      <section className="bg-background pb-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <ProductGrid />
-        </div>
-      </section>
+      <div className="mx-auto max-w-[1400px] px-4 py-12">
+        <ul className="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {products.map((product) => (
+            <li key={product.slug} className="bg-panel">
+              <Link href={`/shop/${product.slug}`} className="flex h-full flex-col p-5">
+                <span className="label">{categoryLabels[product.category]}</span>
+                <span className="board-sm mt-3 text-lg">{product.name}</span>
+                <span className="mt-2 text-sm text-ink-soft">{product.tagline}</span>
+                <span className="mt-auto flex items-baseline justify-between gap-3 pt-6">
+                  <span className="tnum text-xl">{formatPrice(product.priceCents)}</span>
+                  <span className="label !text-signal">
+                    {product.available ? "In stock" : "Soon"}
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </>
   );
 }

@@ -1,102 +1,131 @@
-# FORGE — CrossFit & Hyrox
+# ROAD TO PRO — athlete site
 
-A cinematic website for a CrossFit and Hyrox gym, built with Next.js (App
-Router), TypeScript, Tailwind CSS and Framer Motion. Includes a class
-timetable, membership pricing, coach roster, gym shop, and an AI coach powered
-by [Tavus](https://www.tavus.io).
+A season-long athlete brand site built around one HYROX campaign: race Open,
+get under the Pro qualifying standard, race Pro. Next.js (App Router),
+TypeScript, Tailwind CSS 4, Framer Motion.
 
-## Getting Started
+The commercial part is a three-tier video avatar: a free taster, an
+email-gated session, and paid credits — with the cost controls that a
+per-minute API needs.
 
 ```bash
 npm install
+cp .env.example .env.local   # fill in what you need
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Nothing here requires a
+key to run: every integration degrades to a setup notice instead of failing.
 
-## Rebranding it
+## Making it yours
 
-Almost all copy lives in a handful of data files — you should not need to touch
-a component to make this your gym:
+Almost all content lives in four files:
 
 | File | Controls |
 |---|---|
-| `src/lib/site-config.ts` | Gym name, tagline, address, phone, stats, programmes, testimonials, socials |
-| `src/lib/schedule.ts` | Class types (with colours) and the full weekly timetable |
-| `src/lib/memberships.ts` | Pricing tiers and the free-trial offer |
-| `src/lib/coaches.ts` | Coach roster, bios and certifications |
+| `src/lib/site-config.ts` | Name, athlete details, target time, bio, socials, navigation |
+| `src/lib/races.ts` | The race calendar, results and every split |
+| `src/lib/faq.ts` | FAQ entries (these also become the `FAQPage` markup) |
 | `src/lib/products.ts` | Shop catalogue |
-| `src/lib/scenes.ts` | The homepage scroll sequence |
 
-The gym name appears everywhere via `siteConfig.name` / `siteConfig.fullName`,
-so renaming is a one-line change.
+`siteConfig.isPlaceholder` starts as `true`, which puts a visible notice on
+every page saying the data is an example. Set it to `false` once the real
+values are in — example race times that look real are worse than none.
 
-Class counts are derived, not hardcoded: the homepage and timetable headline
-call `totalWeeklyClasses()`, so adding a session updates the copy automatically.
+## The design: "Splitboard"
+
+The site behaves like a race timing board rather than a fitness landing page.
+
+- **Two themes, not one inverted palette.** Light is a printed results sheet,
+  dark is an LED board. Both are defined as tokens in `src/app/globals.css`.
+- **Ultramarine is the signature.** Green and red are never decoration — they
+  only ever encode pace against target, so a colour always means something.
+- **Wide display type, not condensed.** Sports brands reach for narrow faces by
+  reflex; the board in the hall is wide. Archivo is loaded with its `wdth` axis
+  and set at 112.
+- **The telemetry bar** (`src/components/TelemetryBar.tsx`) rides above every
+  page with the same four numbers: season, next race, best time, gap to the
+  standard.
+- **The splitboard** (`src/components/Splitboard.tsx`) draws a race as its
+  sixteen segments in running order. Bar height is the split, colour is the
+  change against the previous race, runs are outlined and stations filled.
 
 ## Pages
 
-- `/` — hero, cinematic scroll sequence, about, stats, programmes, free-trial
-  block, membership, coaches, shop preview, AI coach, testimonials
-- `/schedule` — weekly timetable, filterable by day and class type
-- `/membership` — pricing tiers, free trial, and FAQs
-- `/coaches` — coach roster with credentials
-- `/shop`, `/shop/[slug]` — gym merch and Hyrox gear (showcase only, no checkout)
-- `/coach-ai` — the Tavus-powered AI coach
-- `/contact` — free-class booking enquiry form
+- `/` — season state, latest race as a splitboard, the format, next races
+- `/races` — calendar and full split history, with `SportsEvent` markup
+- `/about` — biography and profile, with `Person` markup
+- `/avatar` — the video avatar and its three tiers
+- `/shop`, `/shop/[slug]` — preview only, no checkout
+- `/faq` — the answer-engine surface, with `FAQPage` markup
+- `/contact` — sponsorship and press
+- `/impressum`, `/datenschutz` — **not filled in; both block go-live**
+- `/llms.txt`, `/sitemap.xml`, `/robots.txt` — generated from the same data
 
-## The cinematic scroll sequence
+## The video avatar
 
-Five full-viewport scenes (the box → sled push → group class → ergs → race day)
-cross-fade into one another with a slow Ken Burns push, letterbox bars, and a
-progress rail.
+Three tiers, defined in `src/lib/avatar-tiers.ts`:
 
-- Scene copy, image paths and crop focal points: `src/lib/scenes.ts`
-- The scroll rig: `src/components/CinematicScroll.tsx`
-- The images: `public/images/scenes/` — see the README there for download and
-  WebP conversion instructions
+| Tier | Gate | Length | Why |
+|---|---|---|---|
+| Teaser | none | 60 s | Proof it works |
+| Lead | email | 5 min | The actual point — an address is worth more than a small sale |
+| Paid | credit | 7 min | Covers the per-minute cost |
 
-Opacity is driven by explicit scalar functions (`sceneOpacity` / `sceneTravel`)
-rather than keyframe arrays, so behaviour at the range edges is unambiguous:
-each scene is fully opaque only inside its own window, with a clean 50/50
-two-way dissolve at boundaries. It respects `prefers-reduced-motion` — the
-push-in and parallax are disabled, the cross-fade remains.
+Credits are sold in packs (`CREDIT_PACKS`) because Stripe's fixed fee is ~7% of
+a single €3.49 sale but under 3% of a pack. Prices are final — no VAT is added,
+per the German small-business rule (§ 19 UStG). To leave that rule, set
+`VAT_RATE` and `automatic_tax` follows.
 
-## Wiring up Tavus (AI Coach)
+### Cost controls
 
-The `/coach-ai` page and its API routes are complete and waiting on credentials:
+A public endpoint that starts per-minute video sessions is a spending endpoint.
+Four things sit in front of it:
 
-1. Create a replica at [platform.tavus.io](https://platform.tavus.io).
-2. Copy `.env.example` to `.env.local`.
-3. Fill in `TAVUS_API_KEY` and `TAVUS_REPLICA_ID` (optionally `TAVUS_PERSONA_ID`).
-4. Restart. The "AI Coach coming soon" card flips to a live video conversation
-   automatically.
+1. **Tier-bound duration.** `max_call_duration` comes from the tier on the
+   server and is never read from the request.
+2. **Rate limits** per IP and per wallet (`src/lib/avatar-guard.ts`).
+3. **Daily minute budgets** — one for the free tiers, one absolute ceiling.
+   Sessions are reserved at their *maximum* length, because the real duration
+   is unknown until the visitor hangs up.
+4. **A durable store requirement.** Without Upstash Redis the app falls back to
+   an in-process map, which cannot hold a limit across instances — so payments
+   are refused entirely and gated sessions are refused in production.
 
-Your API key is read server-side only and never reaches the browser.
+Entitlements are spent *before* Tavus is called, so two racing requests cannot
+spend the same credit, and are handed back if Tavus refuses.
 
-Relevant files:
+### Wallets
 
-- `src/app/api/tavus/status/route.ts` — reports whether Tavus is configured
-- `src/app/api/tavus/create-conversation/route.ts` — starts a Tavus CVI session
-- `src/app/api/tavus/end-conversation/route.ts` — ends one early
-- `src/components/TavusCoach.tsx` — the widget (handles unconfigured, loading,
-  live and error states)
+There is no login. A wallet is a random id in an httpOnly cookie signed with
+`APP_SECRET`; balances live in the KV store, never in the cookie. Credits are
+granted by the Stripe webhook — not by the success page — because a visitor can
+close the browser and the payment still has to land. Webhook events are
+idempotent, since Stripe retries.
 
-## Known placeholders
+## API
 
-These are deliberately fake and should be replaced before launch:
+| Route | Purpose |
+|---|---|
+| `POST /api/avatar/session` | Start a session — runs every gate |
+| `POST /api/avatar/lead` | Exchange an email for the 5-minute tier |
+| `GET /api/avatar/wallet` | Credits left, lead availability |
+| `GET /api/avatar/status` | Which integrations are configured |
+| `POST /api/avatar/end` | End a conversation early |
+| `POST /api/checkout` | Create a Stripe Checkout session |
+| `POST /api/stripe/webhook` | Grant credits on payment |
 
-- Gym name, address, phone and email in `src/lib/site-config.ts`
-- All member testimonials and coach profiles
-- Stats (member counts, Hyrox finishers) in `src/lib/site-config.ts`
-- Membership prices in `src/lib/memberships.ts`
-- The contact form posts via `mailto:` — swap for Formspree, Resend or your
-  gym CRM before taking real bookings
-- Scene imagery is AI-generated; real photos of your gym will outperform it
+## Before going live
 
-## Build
+- [ ] Fill in `/impressum` and `/datenschutz` — both are placeholders
+- [ ] Confirm the Pro qualifying time for your actual age group on hyrox.com
+- [ ] Set `APP_SECRET`, Upstash and Stripe keys in production
+- [ ] Point a Stripe webhook at `/api/stripe/webhook`
+- [ ] Check Tavus per-minute pricing against `CREDIT_PACKS` — the margin
+      assumption is that most sessions end well before 7 minutes
+- [ ] Set `siteConfig.isPlaceholder = false`
+- [ ] Newsletter double opt-in through a provider, if the box is used
 
-```bash
-npm run build
-npm run start
-```
+HYROX is a registered trademark of its owner. This is an independent athlete
+site with no affiliation to the event organiser — which is also why the brand
+name deliberately avoids it.

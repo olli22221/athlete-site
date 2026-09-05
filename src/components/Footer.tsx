@@ -1,134 +1,75 @@
 import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
 import BrandIcon from "@/components/BrandIcon";
 import { siteConfig } from "@/lib/site-config";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-        <div className="grid gap-12 md:grid-cols-4">
-          <div className="md:col-span-2">
-            <p className="font-display text-3xl tracking-[0.2em]">
-              {siteConfig.name}
-              <span className="text-accent">.</span>
-            </p>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
-              {siteConfig.heroSubtitle}
-            </p>
-            <div className="mt-6 flex gap-4">
-              <a
-                href={siteConfig.social.instagram}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="rounded-full border border-line p-2.5 text-muted transition-colors hover:border-accent hover:text-accent"
-              >
-                <BrandIcon name="instagram" size={18} />
-              </a>
-              <a
-                href={siteConfig.social.youtube}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="YouTube"
-                className="rounded-full border border-line p-2.5 text-muted transition-colors hover:border-accent hover:text-accent"
-              >
-                <BrandIcon name="youtube" size={18} />
-              </a>
-              <a
-                href={siteConfig.social.tiktok}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="TikTok"
-                className="rounded-full border border-line p-2.5 text-muted transition-colors hover:border-accent hover:text-accent"
-              >
-                <BrandIcon name="tiktok" size={18} />
-              </a>
-              <a
-                href={`mailto:${siteConfig.social.email}`}
-                aria-label="Email"
-                className="rounded-full border border-line p-2.5 text-muted transition-colors hover:border-accent hover:text-accent"
-              >
-                <Mail size={18} />
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted">
-              The Gym
-            </p>
-            <ul className="mt-4 space-y-3 text-sm">
-              <li>
-                <Link href="/schedule" className="hover:text-accent">
-                  Timetable
-                </Link>
-              </li>
-              <li>
-                <Link href="/membership" className="hover:text-accent">
-                  Membership
-                </Link>
-              </li>
-              <li>
-                <Link href="/coaches" className="hover:text-accent">
-                  Coaches
-                </Link>
-              </li>
-              <li>
-                <Link href="/shop" className="hover:text-accent">
-                  Shop
-                </Link>
-              </li>
-              <li>
-                <Link href="/coach-ai" className="hover:text-accent">
-                  AI Coach
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted">
-              Find us
-            </p>
-            <ul className="mt-4 space-y-3 text-sm">
-              <li className="flex gap-2.5 text-muted">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-accent" />
-                <span>
-                  {siteConfig.address.line1}
-                  <br />
-                  {siteConfig.address.line2}
-                </span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Phone size={15} className="shrink-0 text-accent" />
+    <footer className="mt-24 border-t border-line bg-panel">
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="sm:col-span-2">
+          <p className="board text-3xl">{siteConfig.name}</p>
+          <p className="mt-3 max-w-sm text-sm text-muted">{siteConfig.intro}</p>
+          <ul className="mt-5 flex gap-3">
+            {siteConfig.socials.map((social) => (
+              <li key={social.name}>
                 <a
-                  href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
-                  className="hover:text-accent"
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.name}
+                  className="flex h-9 w-9 items-center justify-center border border-line text-ink-soft hover:border-signal hover:text-signal"
                 >
-                  {siteConfig.phone}
+                  <BrandIcon name={social.icon} size={16} />
                 </a>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Mail size={15} className="shrink-0 text-accent" />
-                <a
-                  href={`mailto:${siteConfig.social.email}`}
-                  className="hover:text-accent"
-                >
-                  {siteConfig.social.email}
-                </a>
-              </li>
-            </ul>
-          </div>
+            ))}
+          </ul>
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-line pt-8 text-xs text-muted md:flex-row">
-          <p>
-            © {new Date().getFullYear()} {siteConfig.fullName}. All rights
-            reserved.
-          </p>
-          <p>Coached classes, seven days a week.</p>
+        <div>
+          <p className="label">Pages</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {siteConfig.nav.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="text-ink-soft hover:text-signal">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <div>
+          <p className="label">Legal</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            <li>
+              <Link href="/impressum" className="text-ink-soft hover:text-signal">
+                Impressum
+              </Link>
+            </li>
+            <li>
+              <Link href="/datenschutz" className="text-ink-soft hover:text-signal">
+                Datenschutz
+              </Link>
+            </li>
+            <li>
+              <a
+                href={`mailto:${siteConfig.contactEmail}`}
+                className="text-ink-soft hover:text-signal"
+              >
+                {siteConfig.contactEmail}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="border-t border-line-soft px-4 py-5">
+        <p className="mx-auto max-w-[1400px] text-xs text-muted">
+          HYROX is a registered trademark of its owner. This is an independent
+          athlete site and is not affiliated with, endorsed by, or a partner of
+          the event organiser.
+        </p>
       </div>
     </footer>
   );

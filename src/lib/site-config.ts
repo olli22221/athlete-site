@@ -1,95 +1,65 @@
 // ---------------------------------------------------------------------------
-// Single source of truth for the gym's brand + copy.
-// Change the values below to rebrand the whole site — nothing else to touch.
+// Single source of truth for the athlete brand.
+//
+// Everything a rebrand needs lives here. `isPlaceholder` stays true until the
+// real name, times and races are filled in — while it is true the site shows a
+// visible placeholder notice, so example figures can never be mistaken for
+// real results.
 // ---------------------------------------------------------------------------
 
 export const siteConfig = {
-  name: "FORGE",
-  shortName: "FG",
-  fullName: "FORGE — CrossFit & Hyrox",
-  role: "CrossFit · Hyrox · Strength",
-  tagline: "BUILT BY WORK. NOT BY WORDS.",
-  heroSubtitle:
-    "A CrossFit and Hyrox gym for people who want to be measurably fitter. Coached classes, real programming, and a room full of people who show up.",
+  /** Flip to false once the values below are real. */
+  isPlaceholder: true,
 
-  address: {
-    line1: "Unit 7, Kingsway Industrial Estate",
-    line2: "Manchester M11 4DF",
-    maps: "https://maps.google.com/",
-  },
-  phone: "+44 161 000 0000",
+  /** The season campaign — this is what the site is named after, not the sport.
+   *  Deliberately not "Hyrox <something>": HYROX is a registered trademark and
+   *  a brand of your own outlives the format. */
+  name: "ROAD TO PRO",
+  shortName: "RTP",
+  season: "26/27",
 
-  bio: {
-    heading: "Two disciplines. One engine.",
-    paragraphs: [
-      "FORGE is built around two things that work: CrossFit for broad, general strength and skill, and Hyrox for the engine that carries it. Most gyms pick one. We coach both, and we program them so they feed each other instead of fighting.",
-      "Every class is coached start to finish — warm-up, skill, workout, cool-down. Every movement is scaled to the person in front of us, whether that's a first-timer who's never held a barbell or an athlete chasing a sub-70 Hyrox.",
-      "No mirrors, no posing, no contracts you can't leave. Just a well-run room, honest programming, and a standard everyone is held to.",
-    ],
+  athlete: {
+    name: "Athlete Name",
+    role: "Hybrid racer",
+    nationality: "Germany",
+    ageGroup: "25–29",
+    based: "Germany",
   },
 
-  stats: [
-    { label: "Active Members", value: 340, suffix: "+" },
-    { label: "Classes Per Week", value: 62, suffix: "" },
-    { label: "Certified Coaches", value: 9, suffix: "" },
-    { label: "Hyrox Finishers", value: 118, suffix: "" },
-  ],
+  tagline: "Open to Pro in one season. Every number in public.",
 
-  // Program pillars shown on the homepage
-  programs: [
-    {
-      title: "CrossFit Classes",
-      description:
-        "Constantly varied, coached, and scaled to you. Strength, gymnastics, and conditioning in a 60-minute class.",
-      icon: "Dumbbell",
-    },
-    {
-      title: "Hyrox Training",
-      description:
-        "Race-specific work: sled push and pull, burpee broad jumps, wall balls, and the running that ties it together.",
-      icon: "Timer",
-    },
-    {
-      title: "Strength & Barbell",
-      description:
-        "Dedicated lifting blocks. Squat, press, pull, and Olympic lifts on a progressive cycle with real coaching.",
-      icon: "Trophy",
-    },
-    {
-      title: "On-Ramp for Beginners",
-      description:
-        "Never trained like this before? A four-session intro that teaches the movements before you join a class.",
-      icon: "Sparkles",
-    },
-  ],
+  intro:
+    "One season, one threshold. Every race filmed, every split published — including the ones that did not go to plan.",
 
-  testimonials: [
-    {
-      quote:
-        "I'd never touched a barbell. Six months later I finished my first Hyrox. The on-ramp made the difference — I never once felt like the person holding the class up.",
-      name: "Priya S.",
-      role: "Member, 1 year",
-    },
-    {
-      quote:
-        "The coaching is the product. They scale everything properly, and they actually correct you instead of just counting reps.",
-      name: "Tom H.",
-      role: "Member, 3 years",
-    },
-    {
-      quote:
-        "I came from a globo gym where nobody knew my name. Here I get texts if I miss a week. That's why I still turn up at 6am.",
-      name: "Daniela K.",
-      role: "Member, 2 years",
-    },
-  ],
-
-  social: {
-    instagram: "https://instagram.com/",
-    youtube: "https://youtube.com/",
-    tiktok: "https://tiktok.com/",
-    email: "hello@example.com",
+  /** The number the whole season is measured against. Check the official
+   *  standard for your age group before racing on it. */
+  target: {
+    seconds: 3600,
+    label: "Sub 60:00",
+    note: "Pro division entry standard for this age group — verify on hyrox.com before the season.",
   },
+
+  bio: [
+    "Placeholder biography. Two or three paragraphs: where you came from athletically, why hybrid racing, and what this season is actually for.",
+    "Keep the second paragraph concrete — training volume, the split you are worst at, the thing you changed this year. Specifics are what people remember and what search engines and AI answers can quote.",
+    "Close on the season goal and what happens after it, so the page still works once the goal is met or missed.",
+  ],
+
+  socials: [
+    { name: "Instagram", handle: "@yourhandle", url: "https://instagram.com/", icon: "instagram" as const },
+    { name: "YouTube", handle: "@yourhandle", url: "https://youtube.com/", icon: "youtube" as const },
+    { name: "TikTok", handle: "@yourhandle", url: "https://tiktok.com/", icon: "tiktok" as const },
+  ],
+
+  contactEmail: "hello@example.com",
+
+  nav: [
+    { href: "/races", label: "Races" },
+    { href: "/about", label: "About" },
+    { href: "/avatar", label: "Avatar" },
+    { href: "/shop", label: "Shop" },
+    { href: "/faq", label: "FAQ" },
+  ],
 } as const;
 
 export type SiteConfig = typeof siteConfig;
