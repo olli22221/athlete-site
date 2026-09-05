@@ -25,6 +25,7 @@ ${next ? `- Next race: ${next.city}, ${formatDate(next.date)} (${next.division})
 - /races — full race calendar and every split of every completed race
 - /about — biography, personal bests, profiles
 - /avatar — conversational video avatar; 60s free, 5min for an email, longer on credit
+- /app — AI training-plan app for iOS and Android, in development, waitlist open
 - /faq — answers on HYROX qualification, race times, roxzone and training
 - /shop — season apparel and prints
 - /contact — sponsorship and press

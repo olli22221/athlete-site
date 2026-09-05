@@ -57,6 +57,7 @@ export const siteConfig = {
     { href: "/races", label: "Races" },
     { href: "/about", label: "About" },
     { href: "/avatar", label: "Avatar" },
+    { href: "/app", label: "App" },
     { href: "/shop", label: "Shop" },
     { href: "/faq", label: "FAQ" },
   ],

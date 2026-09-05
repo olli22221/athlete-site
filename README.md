@@ -56,6 +56,7 @@ The site behaves like a race timing board rather than a fitness landing page.
 - `/races` — calendar and full split history, with `SportsEvent` markup
 - `/about` — biography and profile, with `Person` markup
 - `/avatar` — the video avatar and its three tiers
+- `/app` — placeholder for the training-plan app, with the waitlist
 - `/shop`, `/shop/[slug]` — preview only, no checkout
 - `/faq` — the answer-engine surface, with `FAQPage` markup
 - `/contact` — sponsorship and press
@@ -114,6 +115,45 @@ idempotent, since Stripe retries.
 | `POST /api/avatar/end` | End a conversation early |
 | `POST /api/checkout` | Create a Stripe Checkout session |
 | `POST /api/stripe/webhook` | Grant credits on payment |
+| `GET`/`POST /api/waitlist` | Training-app waitlist and its count |
+
+
+## Deploying to Vercel
+
+The app builds and runs with **no environment variables at all** — every
+integration degrades to a setup notice instead of failing, so a first deploy is
+safe to look at before any keys exist.
+
+1. Push this repository to GitHub.
+2. In Vercel, **Add New → Project**, import the repository. Framework detection
+   picks up Next.js; the defaults are correct, nothing to change.
+3. Deploy. The site comes up with the placeholder data and setup notices.
+
+### Environment variables
+
+Add these in **Settings → Environment Variables** as you wire each part up.
+Nothing is needed for a first look.
+
+| Variable | Needed for | Notes |
+|---|---|---|
+| `APP_SECRET` | Any avatar tier | Random 32+ chars: `openssl rand -base64 32` |
+| `NEXT_PUBLIC_SITE_URL` | Metadata, sitemap, Stripe redirects | Your real domain, e.g. `https://example.com` |
+| `TAVUS_API_KEY`, `TAVUS_REPLICA_ID` | Starting sessions | `TAVUS_PERSONA_ID` optional |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Credits, rate limits, budgets, waitlist | Vercel Marketplace → Upstash creates both |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Selling credits | Webhook points at `/api/stripe/webhook` |
+| `AVATAR_FREE_MINUTES_PER_DAY`, `AVATAR_TOTAL_MINUTES_PER_DAY` | Cost ceilings | Defaults 30 and 180 |
+
+Two of these are refused rather than fudged, on purpose: without a durable KV
+store the app will not sell credits, and without `APP_SECRET` it will not mint
+a wallet. Both would otherwise fail quietly and cost money.
+
+### Stripe webhook
+
+After the first deploy, add a webhook endpoint in Stripe pointing at
+`https://<your-domain>/api/stripe/webhook`, subscribed to
+`checkout.session.completed`, and put its signing secret in
+`STRIPE_WEBHOOK_SECRET`. Credits are granted by this webhook, not by the
+success page — without it, payments land and credits do not.
 
 ## Before going live
 

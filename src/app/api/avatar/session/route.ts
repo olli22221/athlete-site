@@ -14,6 +14,7 @@ import {
   WALLET_COOKIE,
   currentWallet,
   walletCookieOptions,
+  walletConfigured,
   writeWallet,
 } from "@/lib/wallet";
 
@@ -34,6 +35,17 @@ export async function POST(request: Request) {
   const apiKey = process.env.TAVUS_API_KEY;
   const replicaId = process.env.TAVUS_REPLICA_ID;
   const personaId = process.env.TAVUS_PERSONA_ID;
+
+  if (!walletConfigured()) {
+    return NextResponse.json(
+      {
+        error: "not_configured",
+        message:
+          "Set APP_SECRET to a random 32+ character value (see .env.example).",
+      },
+      { status: 501 }
+    );
+  }
 
   if (!apiKey || !replicaId) {
     return NextResponse.json(

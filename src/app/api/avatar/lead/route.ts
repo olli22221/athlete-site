@@ -4,6 +4,7 @@ import {
   WALLET_COOKIE,
   currentWallet,
   walletCookieOptions,
+  walletConfigured,
   writeWallet,
 } from "@/lib/wallet";
 
@@ -18,6 +19,17 @@ import {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export async function POST(request: Request) {
+  if (!walletConfigured()) {
+    return NextResponse.json(
+      {
+        error: "not_configured",
+        message:
+          "Set APP_SECRET to a random 32+ character value (see .env.example).",
+      },
+      { status: 501 }
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();

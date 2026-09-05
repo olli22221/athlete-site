@@ -6,6 +6,7 @@ import {
   WALLET_COOKIE,
   currentWallet,
   walletCookieOptions,
+  walletConfigured,
 } from "@/lib/wallet";
 
 // Creates a Stripe Checkout session for one credit pack.
@@ -17,6 +18,17 @@ import {
 // page and a payment must still land.
 
 export async function POST(request: Request) {
+  if (!walletConfigured()) {
+    return NextResponse.json(
+      {
+        error: "not_configured",
+        message:
+          "Set APP_SECRET to a random 32+ character value (see .env.example).",
+      },
+      { status: 501 }
+    );
+  }
+
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
     return NextResponse.json(

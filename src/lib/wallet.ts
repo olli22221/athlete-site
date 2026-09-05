@@ -30,6 +30,13 @@ export type Wallet = {
   createdAt: string;
 };
 
+/** Whether a usable signing secret is present. Routes check this so a fresh
+ *  deploy without env vars degrades to a setup notice instead of a 500. */
+export function walletConfigured(): boolean {
+  const value = process.env.APP_SECRET;
+  return Boolean(value && value.length >= 16);
+}
+
 function secret(): string {
   const value = process.env.APP_SECRET;
   if (!value || value.length < 16) {
