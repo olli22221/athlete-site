@@ -3,7 +3,6 @@ import { Archivo, IBM_Plex_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import TelemetryBar from "@/components/TelemetryBar";
 import PlaceholderNotice from "@/components/PlaceholderNotice";
 import { siteConfig } from "@/lib/site-config";
 import { siteUrl } from "@/lib/site-url";
@@ -53,9 +52,12 @@ export default function RootLayout({
         className={`${archivo.variable} ${publicSans.variable} ${plexMono.variable} antialiased`}
       >
         <PlaceholderNotice />
-        <TelemetryBar />
-        <Navbar />
-        <main>{children}</main>
+        {/* The homepage nav floats absolute over the hero. This wrapper is the
+            box it floats in, so it lands below the notice instead of on it. */}
+        <div className="relative">
+          <Navbar />
+          <main>{children}</main>
+        </div>
         <Footer />
       </body>
     </html>

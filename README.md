@@ -42,16 +42,21 @@ The site behaves like a race timing board rather than a fitness landing page.
 - **Wide display type, not condensed.** Sports brands reach for narrow faces by
   reflex; the board in the hall is wide. Archivo is loaded with its `wdth` axis
   and set at 112.
-- **The telemetry bar** (`src/components/TelemetryBar.tsx`) rides above every
-  page with the same four numbers: season, next race, best time, gap to the
-  standard.
-- **The splitboard** (`src/components/Splitboard.tsx`) draws a race as its
-  sixteen segments in running order. Bar height is the split, colour is the
-  change against the previous race, runs are outlined and stations filled.
+- **The homepage is an opener, not a dashboard.** The athlete, the footage,
+  the next race and the avatar — every number lives on `/races`. Footage goes
+  in `public/media/` (see the README there); until it exists the hero shows a
+  marked placeholder frame rather than a broken video.
+- **The splitboard** (`src/components/Splitboard.tsx`), on `/races`, draws a
+  race as its sixteen segments in running order. Bar height is the split,
+  colour is the change against the previous race, runs are outlined and
+  stations filled.
+- **App badges** (`src/components/AppBadges.tsx`) sit top-right on every page.
+  They are drawn in the site's own system and link to `/app` until the app is
+  listed — the official badge artwork is licensed only for listed apps.
 
 ## Pages
 
-- `/` — season state, latest race as a splitboard, the format, next races
+- `/` — the athlete: full-screen footage, next race, avatar, app badges; a scroll feature below
 - `/races` — calendar and full split history, with `SportsEvent` markup
 - `/about` — biography and profile, with `Person` markup
 - `/avatar` — the video avatar and the tin that pays for it

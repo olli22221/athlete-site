@@ -28,6 +28,14 @@ export const siteConfig = {
 
   tagline: "Open to Pro in one season. Every number in public.",
 
+  /** Homepage media. Empty strings fall back to a marked placeholder —
+   *  see public/media/README.md. */
+  media: {
+    heroVideo: "",
+    heroPoster: "",
+    featureVideo: "",
+  },
+
   intro:
     "One season, one threshold. Every race filmed, every split published — including the ones that did not go to plan.",
 
@@ -57,7 +65,6 @@ export const siteConfig = {
     { href: "/races", label: "Races" },
     { href: "/about", label: "About" },
     { href: "/avatar", label: "Avatar" },
-    { href: "/app", label: "App" },
     { href: "/shop", label: "Shop" },
     { href: "/faq", label: "FAQ" },
   ],

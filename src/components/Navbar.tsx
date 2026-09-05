@@ -4,14 +4,25 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import AppBadges from "@/components/AppBadges";
 import { siteConfig } from "@/lib/site-config";
 
+// Over the homepage hero the bar floats transparent on top of the footage;
+// everywhere else it is a solid sticky strip. Same links, same order, so the
+// eye finds them in the same place on every page.
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const overHero = pathname === "/";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-ground/92 backdrop-blur">
+    <header
+      className={
+        overHero
+          ? "absolute inset-x-0 top-0 z-50"
+          : "sticky top-0 z-50 border-b border-line bg-ground/92 backdrop-blur"
+      }
+    >
       <nav className="mx-auto flex max-w-[1400px] items-center justify-between gap-6 px-4 py-3">
         <Link
           href="/"
@@ -21,23 +32,26 @@ export default function Navbar() {
           {siteConfig.name}
         </Link>
 
-        <ul className="hidden items-center gap-1 md:flex">
-          {siteConfig.nav.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`board-sm px-3 py-2 text-xs ${
-                    active ? "text-signal" : "text-ink-soft hover:text-ink"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="hidden items-center gap-6 md:flex">
+          <ul className="flex items-center gap-1">
+            {siteConfig.nav.map((item) => {
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`board-sm px-3 py-2 text-xs ${
+                      active ? "text-signal" : "text-ink-soft hover:text-ink"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <AppBadges />
+        </div>
 
         <button
           type="button"
@@ -51,19 +65,24 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <ul className="border-t border-line md:hidden">
-          {siteConfig.nav.map((item) => (
-            <li key={item.href} className="border-b border-line-soft">
-              <Link
-                href={item.href}
-                className="board-sm block px-4 py-3 text-sm"
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="border-t border-line bg-ground md:hidden">
+          <ul>
+            {siteConfig.nav.map((item) => (
+              <li key={item.href} className="border-b border-line-soft">
+                <Link
+                  href={item.href}
+                  className="board-sm block px-4 py-3 text-sm"
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="px-4 py-4">
+            <AppBadges compact />
+          </div>
+        </div>
       )}
     </header>
   );

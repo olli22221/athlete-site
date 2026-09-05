@@ -33,6 +33,8 @@ export type Division = "open" | "pro";
 
 export type Race = {
   slug: string;
+  /** How the event is actually billed, for the calendar and the hero card. */
+  event: string;
   city: string;
   country: string;
   venue: string;
@@ -58,6 +60,7 @@ export type Race = {
 export const races: Race[] = [
   {
     slug: "karlsruhe-2026",
+    event: "HYROX Karlsruhe",
     city: "Karlsruhe",
     country: "Germany",
     venue: "Messe Karlsruhe",
@@ -80,6 +83,7 @@ export const races: Race[] = [
   },
   {
     slug: "hamburg-2026",
+    event: "HYROX Hamburg",
     city: "Hamburg",
     country: "Germany",
     venue: "Hamburg Messe",
@@ -102,6 +106,7 @@ export const races: Race[] = [
   },
   {
     slug: "frankfurt-2026",
+    event: "HYROX Frankfurt",
     city: "Frankfurt",
     country: "Germany",
     venue: "Messe Frankfurt",
@@ -111,6 +116,7 @@ export const races: Race[] = [
   },
   {
     slug: "abroad-2027-02",
+    event: "HYROX — venue to be confirmed",
     city: "To be confirmed",
     country: "Abroad",
     venue: "TBC",
