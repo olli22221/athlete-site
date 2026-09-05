@@ -34,6 +34,12 @@ export const siteConfig = {
     heroVideo: "",
     heroPoster: "",
     featureVideo: "",
+    /** Background of the 3D phone on /app. Points at the generated image's
+     *  CDN copy until public/media/desert.jpg exists locally — then set this
+     *  to "/media/desert.jpg". A CDN link can expire; a file in the repo
+     *  cannot. */
+    desert:
+      "https://d8j0ntlcm91z4.cloudfront.net/user_3BrcNyRFGEGZEEKLE2IPkapGU9e/hf_20260905_140948_8affa01e-a8cd-4981-96d8-a57a2e44d1dc.png",
   },
 
   intro:

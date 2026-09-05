@@ -3,23 +3,20 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-// A phone in a desert that never ends.
+// A phone in the desert.
 //
-// The ground is one plane whose height comes from layered noise in the vertex
-// shader, sampled at an offset that moves with time — so the dunes roll
-// toward the camera forever without a single vertex being added or moved on
-// the CPU. Fog blends the far edge into the sky, which is what makes the
-// horizon read as endless rather than as the edge of a plane.
+// The desert is a photograph behind a transparent canvas — the image is
+// public/media/desert.jpg, set as the section background by AppHero3D — and
+// this scene draws only the phone on top of it. That keeps the picture
+// swappable without touching any of this, and lets CSS crop it per screen.
 //
 // The phone is a rounded, extruded slab with a canvas-drawn screen. Drag to
 // turn it; let go and it eases back with a little inertia. Under reduced
-// motion the dunes stop flowing and the idle sway stops — dragging still works.
+// motion the idle sway stops — dragging still works.
 
-const SKY_ZENITH = 0xe6b48c;
-const SKY_HORIZON = 0xf7dcc0;
-const FOG = 0xf3d4b6;
-const SAND_LIT = 0xdba86f;
-const SAND_SHADE = 0x9a6a41;
+// Matches the light in the photograph: warm, low, from the left.
+const WARM_SKY = 0xe6b48c;
+const WARM_SAND = 0xdba86f;
 const SUN_DIR = new THREE.Vector3(-0.55, 0.32, -0.75).normalize();
 
 export default function DesertPhoneScene({ className }: { className?: string }) {
@@ -32,7 +29,7 @@ export default function DesertPhoneScene({ className }: { className?: string }) 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // --- renderer / scene / camera --------------------------------------
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -42,70 +39,15 @@ export default function DesertPhoneScene({ className }: { className?: string }) 
     renderer.domElement.style.touchAction = "pan-y";
     renderer.domElement.style.cursor = "grab";
 
+    renderer.setClearColor(0x000000, 0);
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(SKY_HORIZON);
 
-    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 500);
-    camera.position.set(0, 1.55, 5.6);
-    camera.lookAt(0, 1.05, 0);
-
-    // --- sky dome + sun ----------------------------------------------------
-    const sky = new THREE.Mesh(
-      new THREE.SphereGeometry(300, 32, 16),
-      new THREE.ShaderMaterial({
-        side: THREE.BackSide,
-        depthWrite: false,
-        uniforms: {
-          zenith: { value: new THREE.Color(SKY_ZENITH) },
-          horizon: { value: new THREE.Color(SKY_HORIZON) },
-        },
-        vertexShader: `
-          varying float vY;
-          void main() {
-            vY = normalize(position).y;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }`,
-        fragmentShader: `
-          uniform vec3 zenith; uniform vec3 horizon; varying float vY;
-          void main() {
-            float t = smoothstep(-0.05, 0.55, vY);
-            gl_FragColor = vec4(mix(horizon, zenith, t), 1.0);
-          }`,
-      })
-    );
-    scene.add(sky);
-
-    const sunTexture = radialTexture();
-    const sun = new THREE.Sprite(
-      new THREE.SpriteMaterial({ map: sunTexture, transparent: true, depthWrite: false, opacity: 0.95 })
-    );
-    sun.scale.set(70, 70, 1);
-    sun.position.copy(SUN_DIR).multiplyScalar(240).add(new THREE.Vector3(0, 6, 0));
-    scene.add(sun);
-
-    // --- dunes ---------------------------------------------------------------
-    const groundUniforms = {
-      uTime: { value: 0 },
-      uSpeed: { value: reduced ? 0 : 0.9 },
-      uSun: { value: SUN_DIR.clone() },
-      uLit: { value: new THREE.Color(SAND_LIT) },
-      uShade: { value: new THREE.Color(SAND_SHADE) },
-      uFog: { value: new THREE.Color(FOG) },
-    };
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(360, 360, 240, 240),
-      new THREE.ShaderMaterial({
-        uniforms: groundUniforms,
-        vertexShader: DUNE_VERT,
-        fragmentShader: DUNE_FRAG,
-      })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.set(0, 0, -140);
-    scene.add(ground);
+    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 50);
+    camera.position.set(0, 1.4, 4.2);
+    camera.lookAt(0, 1.1, 0);
 
     // --- light for the phone ---------------------------------------------
-    scene.add(new THREE.HemisphereLight(SKY_ZENITH, SAND_LIT, 0.9));
+    scene.add(new THREE.HemisphereLight(WARM_SKY, WARM_SAND, 0.9));
     const sunLight = new THREE.DirectionalLight(0xfff0dc, 1.6);
     sunLight.position.copy(SUN_DIR).multiplyScalar(10);
     scene.add(sunLight);
@@ -228,10 +170,10 @@ export default function DesertPhoneScene({ className }: { className?: string }) 
       // Narrow screens: pull back, and lift the phone so the headline that
       // sits along the bottom edge has the floor to itself.
       const narrow = aspect < 0.8;
-      camera.position.z = narrow ? 8.8 : aspect < 1.2 ? 6.4 : 5.6;
+      camera.position.z = narrow ? 7.2 : aspect < 1.2 ? 5.0 : 4.2;
       baseY = narrow ? 2.45 : 1.12;
-      camera.position.y = narrow ? 2.3 : 1.55;
-      camera.lookAt(0, narrow ? 2.15 : 1.05, 0);
+      camera.position.y = narrow ? 2.3 : 1.4;
+      camera.lookAt(0, narrow ? 2.15 : 1.1, 0);
       camera.updateProjectionMatrix();
     };
     resize();
@@ -253,7 +195,6 @@ export default function DesertPhoneScene({ className }: { className?: string }) 
       if (!visible || document.hidden) return;
       timer.update();
       const t = timer.getElapsed();
-      groundUniforms.uTime.value = t;
 
       if (!dragging) {
         // Inertia, then a slow drift home, then an idle sway on top.
@@ -303,7 +244,6 @@ export default function DesertPhoneScene({ className }: { className?: string }) 
         }
       });
       screenTexture.dispose();
-      sunTexture.dispose();
       renderer.dispose();
       if (canvas.parentNode === el) el.removeChild(canvas);
     };
@@ -311,71 +251,6 @@ export default function DesertPhoneScene({ className }: { className?: string }) 
 
   return <div ref={host} className={className} aria-hidden="true" />;
 }
-
-// --- shaders ---------------------------------------------------------------------
-
-const NOISE = `
-  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
-  float vnoise(vec2 p) {
-    vec2 i = floor(p); vec2 f = fract(p);
-    vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
-               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-  }
-  float fbm(vec2 p) {
-    float v = 0.0; float a = 0.5;
-    for (int i = 0; i < 4; i++) { v += a * vnoise(p); p = p * 2.03 + vec2(17.0, 9.0); a *= 0.5; }
-    return v;
-  }
-  // World-space height. The z offset by time is the whole "never ending"
-  // trick: the same dunes, sampled a little further along each frame.
-  float height(vec2 xz, float t, float speed) {
-    vec2 p = xz + vec2(0.0, t * speed);
-    float big   = (fbm(p * 0.016) - 0.5) * 20.0;   // rolling hills
-    float dune  = (fbm(p * 0.055 + 3.1) - 0.5) * 4.6; // dunes
-    float rip   = (vnoise(p * 1.1) - 0.5) * 0.18;   // ripples
-    // Flatten a patch near the camera so the phone has ground to hover over.
-    float near = smoothstep(3.0, 20.0, length(xz - vec2(0.0, 140.0)));
-    return (big + dune) * near + rip - 0.4;
-  }
-`;
-
-const DUNE_VERT = `
-  uniform float uTime; uniform float uSpeed;
-  varying vec3 vNormal; varying vec3 vWorld;
-  ${NOISE}
-  void main() {
-    // plane is rotated -90° about X, so local (x, y) maps to world (x, -z)
-    vec2 xz = vec2(position.x, position.y);
-    float h  = height(xz, uTime, uSpeed);
-    float e = 0.6;
-    float hx = height(xz + vec2(e, 0.0), uTime, uSpeed);
-    float hz = height(xz + vec2(0.0, e), uTime, uSpeed);
-    vec3 n = normalize(vec3(h - hx, e, h - hz));
-    vNormal = n;
-    vec3 displaced = vec3(position.x, position.y, h);
-    vec4 world = modelMatrix * vec4(displaced, 1.0);
-    vWorld = world.xyz;
-    gl_Position = projectionMatrix * viewMatrix * world;
-  }
-`;
-
-const DUNE_FRAG = `
-  uniform vec3 uSun; uniform vec3 uLit; uniform vec3 uShade; uniform vec3 uFog;
-  varying vec3 vNormal; varying vec3 vWorld;
-  void main() {
-    vec3 n = normalize(vNormal);
-    float diff = clamp(dot(n, uSun), 0.0, 1.0);
-    float wrap = clamp(dot(n, uSun) * 0.5 + 0.5, 0.0, 1.0);
-    vec3 col = mix(uShade, uLit, mix(wrap, diff, 0.6));
-    // slight warmth on crests facing the sun
-    col += vec3(0.08, 0.04, 0.0) * pow(diff, 3.0);
-    float dist = length(vWorld - cameraPosition);
-    float fog = 1.0 - exp(-pow(dist * 0.0105, 1.6));
-    col = mix(col, uFog, clamp(fog, 0.0, 1.0));
-    gl_FragColor = vec4(col, 1.0);
-  }
-`;
 
 // --- helpers -----------------------------------------------------------------------
 
@@ -393,22 +268,6 @@ function roundedRect(w: number, h: number, r: number): THREE.Shape {
   s.lineTo(x, y + r);
   s.quadraticCurveTo(x, y, x + r, y);
   return s;
-}
-
-function radialTexture(): THREE.CanvasTexture {
-  const c = document.createElement("canvas");
-  c.width = c.height = 256;
-  const ctx = c.getContext("2d")!;
-  const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-  g.addColorStop(0, "rgba(255,246,228,1)");
-  g.addColorStop(0.18, "rgba(255,232,200,0.9)");
-  g.addColorStop(0.5, "rgba(255,214,170,0.25)");
-  g.addColorStop(1, "rgba(255,214,170,0)");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 256, 256);
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
 }
 
 // The concept screen, drawn once. Same content as the CSS mockup, so the two

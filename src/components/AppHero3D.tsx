@@ -3,14 +3,19 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import PhoneMockup from "@/components/PhoneMockup";
+import { siteConfig } from "@/lib/site-config";
 
 // Loads the three.js scene on the client only — it is the heaviest thing on
 // the site and there is no reason to ship it to pages that do not use it.
-// Without WebGL the section falls back to the CSS phone on a still gradient.
+// The desert is a photograph underneath in every state, so the section looks
+// right before the scene loads and without WebGL, where the CSS phone stands
+// in for the 3D one.
 const DesertPhoneScene = dynamic(() => import("@/components/DesertPhoneScene"), {
   ssr: false,
-  loading: () => <div className="absolute inset-0 bg-[#f3d4b6]" />,
+  loading: () => null,
 });
+
+const DESERT = siteConfig.media.desert;
 
 function hasWebGL(): boolean {
   try {
@@ -36,20 +41,20 @@ export default function AppHero3D() {
     };
   }, []);
 
-  if (mode === "fallback") {
-    return (
-      <div className="flex items-center justify-center bg-gradient-to-b from-[#e6b48c] to-[#dba86f] py-16">
-        <PhoneMockup />
-      </div>
-    );
-  }
-
   return (
     <div className="absolute inset-0">
-      {mode === "webgl" ? (
-        <DesertPhoneScene className="h-full w-full" />
-      ) : (
-        <div className="absolute inset-0 bg-[#f3d4b6]" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={DESERT}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover object-[50%_60%]"
+        draggable={false}
+      />
+      {mode === "webgl" && <DesertPhoneScene className="absolute inset-0 h-full w-full" />}
+      {mode === "fallback" && (
+        <div className="absolute inset-0 flex items-start justify-center pt-10 sm:items-center sm:pt-0">
+          <PhoneMockup />
+        </div>
       )}
     </div>
   );
