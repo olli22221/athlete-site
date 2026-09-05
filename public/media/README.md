@@ -8,7 +8,7 @@ marked placeholder frame — it never renders a broken video or an empty box.
 | `hero.mp4` | The full-screen opener | 8–15 s, silent, loops seamlessly. Shoot or crop it **vertical-safe**: the centre third has to work on a phone. |
 | `hero-poster.jpg` | First paint + the fallback when a browser will not autoplay | Same framing as the first video frame, or the video looks like it jumps. |
 | `feature.mp4` | The scroll section below the hero | Longer, 15–30 s. A race or a session, not a talking head. |
-| `desert.jpg` | The background of the 3D phone on `/app` | 16:9, generated. Keep the centre clear — the phone stands there. Around 2560 px wide, under 600 KB. |
+| `desert.jpg` | The background of the 3D phone on `/app` | A desert road running into the hills. Keep the centre clear — the phone stands there. 1920 px wide, under 500 KB. |
 
 Then point `siteConfig.media` at them in `src/lib/site-config.ts`:
 
