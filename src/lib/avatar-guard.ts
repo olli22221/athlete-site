@@ -2,20 +2,18 @@
 // Abuse and cost guards for the video avatar.
 //
 // Tavus bills per conversation minute, so an unauthenticated endpoint that
-// starts sessions is a spending endpoint. Three independent limits sit in
+// starts sessions is a spending endpoint. Two independent limits sit in
 // front of it:
 //
-//   1. per-IP rate limit      — stops one visitor looping the free tier
-//   2. daily free-minute cap  — bounds what the free tiers can cost per day
-//   3. daily total-minute cap — an absolute ceiling, paid sessions included
+//   1. per-IP and per-wallet rate limits — stop one visitor looping sessions
+//   2. a daily total-minute cap          — an absolute ceiling on the spend
 //
-// Budget is reserved at the tier's *maximum* duration before the session
-// starts, because the real duration is unknowable until the visitor hangs up.
+// Budget is reserved at the session's *maximum* duration before it starts,
+// because the real duration is unknowable until the visitor hangs up.
 // Reserving the worst case is what makes the ceiling a ceiling.
 // ---------------------------------------------------------------------------
 
 import { kvIncrBy } from "./kv";
-import type { AvatarTier } from "./avatar-tiers";
 
 const DAY_SECONDS = 24 * 60 * 60;
 
@@ -24,9 +22,7 @@ function envMinutes(name: string, fallback: number): number {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-/** Ceiling for the free tiers (teaser + email-gated) per day. */
-export const freeMinutesPerDay = () => envMinutes("AVATAR_FREE_MINUTES_PER_DAY", 30);
-/** Absolute ceiling across every tier per day. */
+/** Absolute ceiling on avatar minutes started per day. */
 export const totalMinutesPerDay = () => envMinutes("AVATAR_TOTAL_MINUTES_PER_DAY", 180);
 
 export function clientIp(request: Request): string {
@@ -98,47 +94,27 @@ export async function checkStartRate(
 }
 
 /**
- * Reserves this session's worst-case minutes against the daily caps.
- * Returns a failure when a cap would be exceeded — and rolls the counters
- * back so a refused session does not consume budget.
+ * Reserves this session's worst-case minutes against the daily cap. Returns a
+ * failure when the cap would be exceeded — and rolls the counter back, so a
+ * refused session does not consume budget.
  */
-export async function reserveBudget(tier: AvatarTier): Promise<GuardFailure | null> {
+export async function reserveBudget(seconds: number): Promise<GuardFailure | null> {
   const day = today();
-  const isFree = tier.gate !== "credit";
+  const total = await kvIncrBy(`budget:total:${day}`, seconds, DAY_SECONDS);
 
-  const total = await kvIncrBy(`budget:total:${day}`, tier.seconds, DAY_SECONDS);
   if (total > totalMinutesPerDay() * 60) {
-    await kvIncrBy(`budget:total:${day}`, -tier.seconds);
+    await kvIncrBy(`budget:total:${day}`, -seconds);
     return {
       status: 503,
       error: "budget_exhausted",
-      message:
-        "The avatar is booked out for today. It comes back online tomorrow.",
+      message: "The avatar is booked out for today. It comes back online tomorrow.",
     };
-  }
-
-  if (isFree) {
-    const free = await kvIncrBy(`budget:free:${day}`, tier.seconds, DAY_SECONDS);
-    if (free > freeMinutesPerDay() * 60) {
-      await kvIncrBy(`budget:free:${day}`, -tier.seconds);
-      await kvIncrBy(`budget:total:${day}`, -tier.seconds);
-      return {
-        status: 503,
-        error: "free_budget_exhausted",
-        message:
-          "Today's free minutes are used up. Credits still work, or come back tomorrow.",
-      };
-    }
   }
 
   return null;
 }
 
 /** Gives budget back when the session could not be created after all. */
-export async function releaseBudget(tier: AvatarTier): Promise<void> {
-  const day = today();
-  await kvIncrBy(`budget:total:${day}`, -tier.seconds);
-  if (tier.gate !== "credit") {
-    await kvIncrBy(`budget:free:${day}`, -tier.seconds);
-  }
+export async function releaseBudget(seconds: number): Promise<void> {
+  await kvIncrBy(`budget:total:${today()}`, -seconds);
 }

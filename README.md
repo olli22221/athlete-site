@@ -4,9 +4,8 @@ A season-long athlete brand site built around one HYROX campaign: race Open,
 get under the Pro qualifying standard, race Pro. Next.js (App Router),
 TypeScript, Tailwind CSS 4, Framer Motion.
 
-The commercial part is a three-tier video avatar: a free taster, an
-email-gated session, and paid credits — with the cost controls that a
-per-minute API needs.
+The commercial part is a paid video avatar: one option, seven minutes, bought
+from a tin on the page — with the cost controls that a per-minute API needs.
 
 ```bash
 npm install
@@ -55,7 +54,7 @@ The site behaves like a race timing board rather than a fitness landing page.
 - `/` — season state, latest race as a splitboard, the format, next races
 - `/races` — calendar and full split history, with `SportsEvent` markup
 - `/about` — biography and profile, with `Person` markup
-- `/avatar` — the video avatar and its three tiers
+- `/avatar` — the video avatar and the tin that pays for it
 - `/app` — placeholder for the training-plan app, with the waitlist
 - `/shop`, `/shop/[slug]` — preview only, no checkout
 - `/faq` — the answer-engine surface, with `FAQPage` markup
@@ -65,43 +64,42 @@ The site behaves like a race timing board rather than a fitness landing page.
 
 ## The video avatar
 
-Three tiers, defined in `src/lib/avatar-tiers.ts`:
+One option, defined in `src/lib/avatar-tiers.ts`: **seven minutes for a fixed
+price**, paid by card before the session starts. No free taster, no email tier.
+The price is final — no VAT is added, per the German small-business rule
+(§ 19 UStG). To leave that rule, set `VAT_RATE` and `automatic_tax` follows.
 
-| Tier | Gate | Length | Why |
-|---|---|---|---|
-| Teaser | none | 60 s | Proof it works |
-| Lead | email | 5 min | The actual point — an address is worth more than a small sale |
-| Paid | credit | 7 min | Covers the per-minute cost |
+The tin (`src/components/DonationTin.tsx`) is the only control: click it, pay
+through Stripe, come back with a session waiting. The same button then starts
+the conversation.
 
-Credits are sold in packs (`CREDIT_PACKS`) because Stripe's fixed fee is ~7% of
-a single €3.49 sale but under 3% of a pack. Prices are final — no VAT is added,
-per the German small-business rule (§ 19 UStG). To leave that rule, set
-`VAT_RATE` and `automatic_tax` follows.
+The amount lives on the server and the checkout route does not read the request
+body at all, so there is nothing a visitor could post to change what they pay.
 
 ### Cost controls
 
 A public endpoint that starts per-minute video sessions is a spending endpoint.
 Four things sit in front of it:
 
-1. **Tier-bound duration.** `max_call_duration` comes from the tier on the
-   server and is never read from the request.
+1. **Server-side duration.** `max_call_duration` is a constant and is never
+   read from the request.
 2. **Rate limits** per IP and per wallet (`src/lib/avatar-guard.ts`).
-3. **Daily minute budgets** — one for the free tiers, one absolute ceiling.
+3. **A daily minute budget** — an absolute ceiling on what a day can cost.
    Sessions are reserved at their *maximum* length, because the real duration
    is unknown until the visitor hangs up.
 4. **A durable store requirement.** Without Upstash Redis the app falls back to
    an in-process map, which cannot hold a limit across instances — so payments
-   are refused entirely and gated sessions are refused in production.
+   are refused entirely and sessions are refused in production.
 
-Entitlements are spent *before* Tavus is called, so two racing requests cannot
-spend the same credit, and are handed back if Tavus refuses.
+The credit is spent *before* Tavus is called, so two racing requests cannot
+spend the same one, and it is handed back if Tavus refuses.
 
 ### Wallets
 
 There is no login. A wallet is a random id in an httpOnly cookie signed with
-`APP_SECRET`; balances live in the KV store, never in the cookie. Credits are
-granted by the Stripe webhook — not by the success page — because a visitor can
-close the browser and the payment still has to land. Webhook events are
+`APP_SECRET`; the balance lives in the KV store, never in the cookie. Sessions
+are granted by the Stripe webhook — not by the success page — because a visitor
+can close the browser and the payment still has to land. Webhook events are
 idempotent, since Stripe retries.
 
 ## API
@@ -109,12 +107,11 @@ idempotent, since Stripe retries.
 | Route | Purpose |
 |---|---|
 | `POST /api/avatar/session` | Start a session — runs every gate |
-| `POST /api/avatar/lead` | Exchange an email for the 5-minute tier |
 | `GET /api/avatar/wallet` | Credits left, lead availability |
 | `GET /api/avatar/status` | Which integrations are configured |
 | `POST /api/avatar/end` | End a conversation early |
-| `POST /api/checkout` | Create a Stripe Checkout session |
-| `POST /api/stripe/webhook` | Grant credits on payment |
+| `POST /api/checkout` | Create a Stripe Checkout session for one session |
+| `POST /api/stripe/webhook` | Grant the session on payment |
 | `GET`/`POST /api/waitlist` | Training-app waitlist and its count |
 
 
@@ -136,12 +133,12 @@ Nothing is needed for a first look.
 
 | Variable | Needed for | Notes |
 |---|---|---|
-| `APP_SECRET` | Any avatar tier | Random 32+ chars: `openssl rand -base64 32` |
+| `APP_SECRET` | The avatar at all | Random 32+ chars: `openssl rand -base64 32` |
 | `NEXT_PUBLIC_SITE_URL` | Metadata, sitemap, Stripe redirects | Your real domain, e.g. `https://example.com` |
 | `TAVUS_API_KEY`, `TAVUS_REPLICA_ID` | Starting sessions | `TAVUS_PERSONA_ID` optional |
-| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Credits, rate limits, budgets, waitlist | Vercel Marketplace → Upstash creates both |
-| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Selling credits | Webhook points at `/api/stripe/webhook` |
-| `AVATAR_FREE_MINUTES_PER_DAY`, `AVATAR_TOTAL_MINUTES_PER_DAY` | Cost ceilings | Defaults 30 and 180 |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Sessions, rate limits, budgets, waitlist | Vercel Marketplace → Upstash creates both |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Selling sessions | Webhook points at `/api/stripe/webhook` |
+| `AVATAR_TOTAL_MINUTES_PER_DAY` | Cost ceiling | Default 180 |
 
 Two of these are refused rather than fudged, on purpose: without a durable KV
 store the app will not sell credits, and without `APP_SECRET` it will not mint
@@ -152,8 +149,8 @@ a wallet. Both would otherwise fail quietly and cost money.
 After the first deploy, add a webhook endpoint in Stripe pointing at
 `https://<your-domain>/api/stripe/webhook`, subscribed to
 `checkout.session.completed`, and put its signing secret in
-`STRIPE_WEBHOOK_SECRET`. Credits are granted by this webhook, not by the
-success page — without it, payments land and credits do not.
+`STRIPE_WEBHOOK_SECRET`. Sessions are granted by this webhook, not by the
+success page — without it, payments land and sessions do not.
 
 ## Before going live
 
@@ -161,10 +158,9 @@ success page — without it, payments land and credits do not.
 - [ ] Confirm the Pro qualifying time for your actual age group on hyrox.com
 - [ ] Set `APP_SECRET`, Upstash and Stripe keys in production
 - [ ] Point a Stripe webhook at `/api/stripe/webhook`
-- [ ] Check Tavus per-minute pricing against `CREDIT_PACKS` — the margin
-      assumption is that most sessions end well before 7 minutes
+- [ ] Check Tavus per-minute pricing against `AVATAR_SESSION.amountCents` — the
+      margin assumption is that most sessions end well before 7 minutes
 - [ ] Set `siteConfig.isPlaceholder = false`
-- [ ] Newsletter double opt-in through a provider, if the box is used
 
 HYROX is a registered trademark of its owner. This is an independent athlete
 site with no affiliation to the event organiser — which is also why the brand

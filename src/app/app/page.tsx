@@ -100,8 +100,8 @@ export default function AppPage() {
               <Link href="/avatar" className="text-signal">
                 video avatar
               </Link>{" "}
-              already answers training questions, and every split from every
-              race is on the{" "}
+              answers training questions by the session, and every split from
+              every race is free on the{" "}
               <Link href="/races" className="text-signal">
                 races page
               </Link>{" "}

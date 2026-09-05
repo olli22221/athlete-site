@@ -21,12 +21,6 @@ export type Wallet = {
   id: string;
   /** Paid sessions left to spend. */
   sessions: number;
-  /** The one free email-gated session is available until this flips. */
-  leadUsed: boolean;
-  email?: string;
-  emailAt?: string;
-  /** Ticked the newsletter box — the provider still has to confirm it. */
-  newsletterOptIn?: boolean;
   createdAt: string;
 };
 
@@ -76,12 +70,12 @@ function key(id: string): string {
 export async function readWallet(id: string): Promise<Wallet> {
   const raw = await kvGet(key(id));
   if (!raw) {
-    return { id, sessions: 0, leadUsed: false, createdAt: new Date().toISOString() };
+    return { id, sessions: 0, createdAt: new Date().toISOString() };
   }
   try {
     return { ...(JSON.parse(raw) as Wallet), id };
   } catch {
-    return { id, sessions: 0, leadUsed: false, createdAt: new Date().toISOString() };
+    return { id, sessions: 0, createdAt: new Date().toISOString() };
   }
 }
 

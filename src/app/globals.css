@@ -22,7 +22,9 @@
   --line-soft: #131a1f;
 
   --signal: #5c6bff;
-  --signal-ink: #ffffff;
+  /* Dark ink, not white: on this lighter blue, white lands around 3.4:1 while
+     near-black clears 7:1. The light theme keeps white on its darker blue. */
+  --signal-ink: #07090b;
   --signal-dim: #2b3ac4;
 
   --under: #22e39c;
@@ -175,4 +177,44 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--signal-dim);
+}
+
+/* --- the donation tin ------------------------------------------------------
+   The coin sits above the lid and drops toward the slot when the tin is
+   hovered or focused. It is decoration on a control that already says what it
+   does in words, so it stops entirely under reduced motion. */
+.tin-price {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+.tin-sub {
+  font-family: var(--font-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+}
+
+.tin-coin {
+  transition: transform 0.45s cubic-bezier(0.36, 0, 0.2, 1);
+}
+
+.tin:hover .tin-coin,
+.tin:focus-visible .tin-coin {
+  transform: translateY(38px);
+}
+
+.tin:disabled .tin-coin {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tin-coin {
+    transition: none;
+  }
+  .tin:hover .tin-coin,
+  .tin:focus-visible .tin-coin {
+    transform: none;
+  }
 }

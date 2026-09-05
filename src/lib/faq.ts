@@ -86,7 +86,7 @@ export const faq: FaqEntry[] = [
     group: "work",
     question: "How does the video avatar work, and why does it cost money?",
     answer:
-      "It is a conversational video version of me that you can ask about training, pacing and racing. A one-minute taster is free, five minutes is free in exchange for an email address, and longer sessions need a credit because the underlying video conversation is billed by the minute. The credit covers that cost — it is not a subscription and there is nothing to cancel.",
+      "It is a conversational video version of me that you can ask about training, pacing and racing. One session is seven minutes and costs a fixed amount, paid by card before it starts, because the underlying video conversation is billed to me by the minute. It is a one-off purchase, not a subscription, and there is nothing to cancel.",
   },
   {
     group: "work",

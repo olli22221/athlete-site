@@ -6,10 +6,9 @@ import {
   walletConfigured,
 } from "@/lib/wallet";
 
-// What the avatar page needs to render the right buttons: how many paid
-// sessions are left, and whether the one free email-gated session is still
-// available. No wallet id and no email are returned — the page never needs
-// them, and not sending them keeps them out of the browser.
+// All the avatar page needs: how many paid sessions are left. The wallet id
+// is never returned — the page does not need it, and not sending it keeps it
+// out of the browser.
 
 export async function GET() {
   if (!walletConfigured()) {
@@ -25,11 +24,7 @@ export async function GET() {
 
   const { wallet, isNew, cookieValue } = await currentWallet();
 
-  const response = NextResponse.json({
-    sessionsLeft: wallet.sessions,
-    leadAvailable: Boolean(wallet.email) && !wallet.leadUsed,
-    emailKnown: Boolean(wallet.email),
-  });
+  const response = NextResponse.json({ sessionsLeft: wallet.sessions });
   if (isNew) response.cookies.set(WALLET_COOKIE, cookieValue, walletCookieOptions);
   return response;
 }

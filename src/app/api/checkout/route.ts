@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { CREDIT_PACKS, VAT_RATE, findPack } from "@/lib/avatar-tiers";
+import { AVATAR_SESSION, VAT_RATE } from "@/lib/avatar-tiers";
 import { kvIsDurable } from "@/lib/kv";
 import { siteUrl } from "@/lib/site-url";
 import {
@@ -10,13 +10,14 @@ import {
   walletConfigured,
 } from "@/lib/wallet";
 
-// Creates a Stripe Checkout session for one credit pack.
+// Creates a Stripe Checkout session for one avatar session — what the tin on
+// /avatar does when you click it.
 //
-// The price comes from CREDIT_PACKS on the server — never from the request —
-// so a visitor cannot post their own amount and buy eight sessions for a cent.
-// The wallet id travels in the session metadata; the webhook is what actually
-// grants the credits, because a visitor can close the browser on the success
-// page and a payment must still land.
+// The amount comes from AVATAR_SESSION on the server and the request body is
+// not read at all, so there is nothing a visitor could post to change what
+// they pay. The wallet id travels in the session metadata; the webhook is what
+// actually grants the credit, because a visitor can close the browser on the
+// success page and the payment must still land.
 
 export async function POST(request: Request) {
   if (!walletConfigured()) {
@@ -55,25 +56,6 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    body = {};
-  }
-
-  const packId = String((body as { pack?: unknown })?.pack ?? "");
-  const pack = findPack(packId);
-  if (!pack) {
-    return NextResponse.json(
-      {
-        error: "unknown_pack",
-        message: `Unknown pack. Available: ${CREDIT_PACKS.map((p) => p.id).join(", ")}.`,
-      },
-      { status: 400 }
-    );
-  }
-
   const { wallet, isNew, cookieValue } = await currentWallet();
   const stripe = new Stripe(secretKey);
   // The request's own origin is the most correct redirect target when it is
@@ -92,15 +74,15 @@ export async function POST(request: Request) {
           quantity: 1,
           price_data: {
             currency: "eur",
-            unit_amount: pack.amountCents,
+            unit_amount: AVATAR_SESSION.amountCents,
             product_data: {
-              name: `Avatar credits — ${pack.label}`,
-              description: `${pack.sessions} × 7 minutes with the video avatar.`,
+              name: "Video avatar session",
+              description: `${AVATAR_SESSION.seconds / 60} minutes with the video avatar.`,
             },
           },
         },
       ],
-      metadata: { walletId: wallet.id, packId: pack.id, sessions: String(pack.sessions) },
+      metadata: { walletId: wallet.id, sessions: "1" },
       success_url: `${origin}/avatar?purchase=success`,
       cancel_url: `${origin}/avatar?purchase=cancelled`,
     });
