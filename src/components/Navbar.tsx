@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import AppBadges from "@/components/AppBadges";
 import { siteConfig } from "@/lib/site-config";
 
 // Over the homepage hero the bar floats transparent on top of the footage;
@@ -32,7 +31,7 @@ export default function Navbar() {
           {siteConfig.name}
         </Link>
 
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center md:flex">
           <ul className="flex items-center gap-1">
             {siteConfig.nav.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -50,7 +49,6 @@ export default function Navbar() {
               );
             })}
           </ul>
-          <AppBadges />
         </div>
 
         <button
@@ -79,9 +77,6 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <div className="px-4 py-4">
-            <AppBadges compact />
-          </div>
         </div>
       )}
     </header>

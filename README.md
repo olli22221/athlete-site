@@ -55,9 +55,12 @@ The site behaves like a race timing board rather than a fitness landing page.
   race as its sixteen segments in running order. Bar height is the split,
   colour is the change against the previous race, runs are outlined and
   stations filled.
-- **App badges** (`src/components/AppBadges.tsx`) sit top-right on every page.
-  They are drawn in the site's own system and link to `/app` until the app is
-  listed — the official badge artwork is licensed only for listed apps.
+- **The app page opens in 3D** (`src/components/DesertPhoneScene.tsx`): a
+  phone you can drag to turn, in a desert whose dunes flow toward the camera
+  forever. The ground is one plane displaced in the vertex shader by noise
+  sampled at a time offset, so it never ends without a vertex ever moving on
+  the CPU. three.js loads on that page only; without WebGL it falls back to
+  the CSS phone. No store badges anywhere until the app is actually listed.
 
 ## Pages
 
@@ -65,7 +68,7 @@ The site behaves like a race timing board rather than a fitness landing page.
 - `/races` — calendar and full split history, with `SportsEvent` markup
 - `/about` — biography and profile, with `Person` markup
 - `/avatar` — the video avatar and the tin that pays for it
-- `/app` — the training-plan app: concept phone screen, store badges, features, waitlist
+- `/app` — the training-plan app: draggable 3D phone in an endless desert, features, waitlist
 - `/shop`, `/shop/[slug]` — preview only, no checkout
 - `/faq` — the answer-engine surface, with `FAQPage` markup
 - `/contact` — sponsorship and press

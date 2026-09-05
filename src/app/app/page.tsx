@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import AppBadges from "@/components/AppBadges";
-import PhoneMockup from "@/components/PhoneMockup";
+import AppHero3D from "@/components/AppHero3D";
 import WaitlistForm from "@/components/WaitlistForm";
 import { SEGMENTS } from "@/lib/races";
 import { siteConfig } from "@/lib/site-config";
@@ -12,42 +11,47 @@ export const metadata: Metadata = {
     "An AI training-plan app for hybrid racing, built on my own race data. iOS and Android — in development, not released yet.",
 };
 
-// The app's landing page: what it is, what it will do, where it will land,
-// and the waitlist that decides whether it gets built at all. The phone is a
-// drawn concept screen, labelled as such — there is nothing to screenshot yet.
+// The app's landing page. The opener is a phone you can turn, standing in a
+// desert whose hills never stop coming — which is what a race feels like.
+// The screen on it is a concept, and the page says so: there is nothing to
+// screenshot yet.
 export default function AppPage() {
   const stations = SEGMENTS.filter((segment) => segment.kind === "station");
 
   return (
     <>
-      <section className="border-b border-line">
-        <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-4 py-14 lg:grid-cols-[1.2fr_1fr] lg:py-20">
-          <div>
-            <p className="label">In development · iOS &amp; Android</p>
-            <h1 className="board mt-3 text-[clamp(2.5rem,6vw,5rem)]">
-              Training plans that know what a race costs
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-ink-soft">
-              Plans built around your target time, your training days and the
-              stations you actually lose time on — generated with AI, on my
-              methodology and my race data rather than whatever a chatbot
-              happens to say.
-            </p>
+      {/* This section is its own world: warm desert, dark ink, in both themes. */}
+      <section className="relative h-[88svh] min-h-[560px] overflow-hidden text-[#1d150f]">
+        <AppHero3D />
 
-            <div className="mt-8">
-              <AppBadges />
-              <p className="mt-3 text-xs text-muted">
-                Not in the stores yet. Both badges bring you back here until it
-                is — the waitlist below is where you find out first.
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#3a2818]/70 via-[#3a2818]/25 to-transparent pb-8 pt-20 sm:pb-14 sm:pt-32">
+          <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-xl text-[#fff4e6]">
+              <p className="label !text-[#ffd9b3]">In development · iOS &amp; Android</p>
+              <h1 className="board mt-3 text-[clamp(2.25rem,5.5vw,4.5rem)]">
+                Training plans that know what a race costs
+              </h1>
+              {/* Hidden on phones: the 3D phone needs the height there. */}
+              <p className="mt-4 hidden max-w-lg text-lg text-[#ffe8d0] sm:block">
+                Built around your target time, your training days and the
+                stations you actually lose time on — on my methodology and my
+                race data, not whatever a chatbot happens to say.
               </p>
             </div>
+            <p className="text-xs text-[#ffd9b3] sm:max-w-[16rem] sm:text-right sm:text-sm">
+              <span className="hidden sm:inline">The hills do not stop. That is the sport.</span>
+              <span className="block opacity-80 sm:mt-2 sm:text-xs">Drag the phone to turn it · concept screen, not the final UI</span>
+            </p>
           </div>
-
-          <PhoneMockup />
         </div>
       </section>
 
       <section className="mx-auto max-w-[1400px] px-4 py-14">
+        <p className="mb-10 max-w-lg text-lg text-ink-soft sm:hidden">
+          Built around your target time, your training days and the stations
+          you actually lose time on — on my methodology and my race data, not
+          whatever a chatbot happens to say.
+        </p>
         <h2 className="board text-2xl">What it will do</h2>
         <ol className="mt-6 grid gap-px bg-line md:grid-cols-2">
           <Feature n="01" title="Ask what you are actually chasing">
@@ -93,9 +97,9 @@ export default function AppPage() {
           <p className="label">Waitlist</p>
           <h2 className="board mt-3 text-3xl">Tell me when it ships</h2>
           <p className="mt-4 max-w-md text-ink-soft">
-            This list is the decision. If it fills, the app gets built; if it
-            does not, it does not — and you will have lost nothing. One email
-            when there is something to install.
+            Not in the stores yet. This list is the decision: if it fills, the
+            app gets built; if it does not, it does not — and you will have
+            lost nothing. One email when there is something to install.
           </p>
           <p className="mt-6 text-sm text-muted">
             Until then, the{" "}
