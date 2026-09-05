@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { CREDIT_PACKS, VAT_RATE, findPack } from "@/lib/avatar-tiers";
 import { kvIsDurable } from "@/lib/kv";
+import { siteUrl } from "@/lib/site-url";
 import {
   WALLET_COOKIE,
   currentWallet,
@@ -75,10 +76,9 @@ export async function POST(request: Request) {
 
   const { wallet, isNew, cookieValue } = await currentWallet();
   const stripe = new Stripe(secretKey);
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    request.headers.get("origin") ??
-    "http://localhost:3000";
+  // The request's own origin is the most correct redirect target when it is
+  // available; the configured site URL is the fallback for calls without one.
+  const origin = request.headers.get("origin")?.trim() || siteUrl();
 
   try {
     const session = await stripe.checkout.sessions.create({

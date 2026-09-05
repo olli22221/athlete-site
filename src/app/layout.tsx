@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import TelemetryBar from "@/components/TelemetryBar";
 import PlaceholderNotice from "@/components/PlaceholderNotice";
 import { siteConfig } from "@/lib/site-config";
+import { siteUrl } from "@/lib/site-url";
 
 // Archivo is loaded with its width axis so the display face can run wide.
 // Sports brands reach for condensed type by reflex; the board in the hall is
@@ -27,15 +28,13 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
 export const metadata: Metadata = {
   title: {
     default: `${siteConfig.name} — ${siteConfig.athlete.name}`,
     template: `%s — ${siteConfig.name}`,
   },
   description: siteConfig.intro,
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(siteUrl()),
   openGraph: {
     title: `${siteConfig.name} — ${siteConfig.athlete.name}`,
     description: siteConfig.intro,

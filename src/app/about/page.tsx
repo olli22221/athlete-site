@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import BrandIcon from "@/components/BrandIcon";
 import { finishedRaces, formatClock, personalBest } from "@/lib/races";
 import { siteConfig } from "@/lib/site-config";
+import { siteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "About",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const best = personalBest();
   const done = finishedRaces();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const origin = siteUrl();
 
   // Person markup with sameAs is how an answer engine works out that the
   // handles, the results lists and this site are all the same athlete.
@@ -21,7 +22,7 @@ export default function AboutPage() {
     name: siteConfig.athlete.name,
     jobTitle: siteConfig.athlete.role,
     nationality: siteConfig.athlete.nationality,
-    url: siteUrl,
+    url: origin,
     knowsAbout: ["HYROX", "Hybrid racing", "Compromised running", "Endurance training"],
     sameAs: siteConfig.socials.map((social) => social.url),
   };

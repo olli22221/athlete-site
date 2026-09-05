@@ -10,6 +10,7 @@ import {
   type Race,
 } from "@/lib/races";
 import { siteConfig } from "@/lib/site-config";
+import { siteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "Races",
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 export default function RacesPage() {
   const upcoming = upcomingRaces();
   const done = finishedRaces();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const origin = siteUrl();
 
   // SportsEvent markup is what puts these dates into search results and AI
   // answers. It is generated from the same array the page renders, so the two
@@ -37,7 +38,7 @@ export default function RacesPage() {
       address: { "@type": "PostalAddress", addressLocality: race.city, addressCountry: race.country },
     },
     performer: { "@type": "Person", name: siteConfig.athlete.name },
-    url: `${siteUrl}/races`,
+    url: `${origin}/races`,
   }));
 
   return (
