@@ -42,10 +42,15 @@ The site behaves like a race timing board rather than a fitness landing page.
 - **Wide display type, not condensed.** Sports brands reach for narrow faces by
   reflex; the board in the hall is wide. Archivo is loaded with its `wdth` axis
   and set at 112.
-- **The homepage is an opener, not a dashboard.** The athlete, the footage,
-  the next race and the avatar — every number lives on `/races`. Footage goes
-  in `public/media/` (see the README there); until it exists the hero shows a
-  marked placeholder frame rather than a broken video.
+- **The homepage is an opener, not a dashboard.** One scroll
+  (`src/components/HomeScroll.tsx`): the footage stays pinned and moves with
+  the scroll — a slow push-in and drift — while the first screen (name, next
+  race, avatar) pulls away and three beats pass over it. Every number lives on
+  `/races`. Footage goes in `public/media/` (see the README there); until it
+  exists the hero shows a marked placeholder frame rather than a broken video.
+  Scroll-linked opacity is driven through a CSS variable on purpose: handed to
+  the `opacity` key, framer routes it to the browser's scroll timeline, which
+  ignores the container's offsets.
 - **The splitboard** (`src/components/Splitboard.tsx`), on `/races`, draws a
   race as its sixteen segments in running order. Bar height is the split,
   colour is the change against the previous race, runs are outlined and
@@ -56,11 +61,11 @@ The site behaves like a race timing board rather than a fitness landing page.
 
 ## Pages
 
-- `/` — the athlete: full-screen footage, next race, avatar, app badges; a scroll feature below
+- `/` — one continuous scroll over pinned footage: the athlete, next race and avatar first, then three beats
 - `/races` — calendar and full split history, with `SportsEvent` markup
 - `/about` — biography and profile, with `Person` markup
 - `/avatar` — the video avatar and the tin that pays for it
-- `/app` — placeholder for the training-plan app, with the waitlist
+- `/app` — the training-plan app: concept phone screen, store badges, features, waitlist
 - `/shop`, `/shop/[slug]` — preview only, no checkout
 - `/faq` — the answer-engine surface, with `FAQPage` markup
 - `/contact` — sponsorship and press
